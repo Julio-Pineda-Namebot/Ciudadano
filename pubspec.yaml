@@ -17,6 +17,9 @@ dependencies:
   introduction_screen: ^3.1.17
   flutter_native_splash: ^2.4.5
   lottie: ^3.3.1
+  flutter_bloc: ^9.1.0
+  shared_preferences: ^2.5.3
+  flutter_secure_storage: ^9.2.4
   
 dev_dependencies:
   flutter_test:
@@ -30,6 +33,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/lottie/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
