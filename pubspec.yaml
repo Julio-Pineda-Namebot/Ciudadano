@@ -16,10 +16,15 @@ dependencies:
   google_fonts: ^6.2.1
   introduction_screen: ^3.1.17
   flutter_native_splash: ^2.4.5
+  splash_master: ^0.0.2
   lottie: ^3.3.1
   flutter_bloc: ^9.1.0
   shared_preferences: ^2.5.3
   flutter_secure_storage: ^9.2.4
+  flutter_login: ^5.0.0
+  dio: ^5.8.0+1
+  logger: ^2.5.0
+  local_auth: ^2.3.0
   
 dev_dependencies:
   flutter_test:
@@ -34,7 +39,6 @@ flutter:
   assets:
     - assets/
     - assets/lottie/
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -60,3 +64,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+splash_master:
+  color: '#000000'
+  image: 'assets/splash.png'

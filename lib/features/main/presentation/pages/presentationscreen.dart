@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:ciudadano/features/auth/presentation/pages/loginscreen.dart';
 import 'package:ciudadano/features/main/presentation/bloc/presentation_bloc.dart';
-import 'package:ciudadano/features/main/presentation/pages/loginscreen.dart';
 
 class PresentationScreen extends StatelessWidget {
   const PresentationScreen({super.key});
@@ -88,8 +88,8 @@ class PresentationScreen extends StatelessWidget {
               child: Center( 
                   child: Lottie.asset(
                   'assets/lottie/splash_present_3.json',
-                  width: 250.0,
-                  height: 250.0,
+                  width: 350.0,
+                  height: 350.0,
                   ),
                 ),
               ),
