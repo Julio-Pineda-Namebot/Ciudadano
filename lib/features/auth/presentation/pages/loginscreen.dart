@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:ciudadano/features/auth/data/auth_remote_datasource.dart';
 import 'package:ciudadano/features/main/presentation/pages/homescreen.dart';
-import 'package:ciudadano/features/auth/presentation/helper/biometric_auth_helper.dart';
+// import 'package:ciudadano/features/auth/presentation/helper/biometric_auth_helper.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MyLoginPage extends StatefulWidget {
@@ -228,35 +228,35 @@ class MyLoginPageState extends State<MyLoginPage> {
         additionalSignUpSubmitButton: 'Enviar',
         providersTitleFirst: 'o ingresa con'
       ),
-      loginProviders: [
-        LoginProvider(
-          icon: Icons.fingerprint,
-          label: 'Biometría',
-          callback: () async {
-            final token = await secureStorage.read(key: 'auth_token');
+      // loginProviders: [
+      //   LoginProvider(
+      //     icon: Icons.fingerprint,
+      //     label: 'Biometría',
+      //     callback: () async {
+      //       final token = await secureStorage.read(key: 'auth_token');
 
-            if (token == null) {
-              return 'Primero debes iniciar sesión manualmente';
-            }
+      //       if (token == null) {
+      //         return 'Primero debes iniciar sesión manualmente';
+      //       }
 
-            final isAvailable = await LocalAuth.canAuth();
-            if (!isAvailable) {
-              return 'Biometría no disponible';
-            }
+      //       final isAvailable = await LocalAuth.canAuth();
+      //       if (!isAvailable) {
+      //         return 'Biometría no disponible';
+      //       }
 
-            final isAuthenticated = await LocalAuth.authenticate();
-            if (isAuthenticated) {
-              if (!context.mounted) return null;
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-              );
-              return null;
-            } else {
-              return 'Autenticación biométrica fallida';
-            }
-          },
-        ),
-      ],
+      //       final isAuthenticated = await LocalAuth.authenticate();
+      //       if (isAuthenticated) {
+      //         if (!context.mounted) return null;
+      //         Navigator.of(context).pushReplacement(
+      //           MaterialPageRoute(builder: (_) => const HomeScreen()),
+      //         );
+      //         return null;
+      //       } else {
+      //         return 'Autenticación biométrica fallida';
+      //       }
+      //     },
+      //   ),
+      // ],
       footer: '©2025 Todos los derechos reservados.',
       hideForgotPasswordButton: false,
       initialIsoCode: 'PE',
