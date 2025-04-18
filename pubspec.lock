@@ -138,7 +138,7 @@ packages:
     source: hosted
     version: "4.0.1"
   equatable:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: equatable
       sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
@@ -712,6 +712,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.1"
+  sidebarx:
+    dependency: "direct main"
+    description:
+      name: sidebarx
+      sha256: abe39d6db237fb8e25c600e8039ffab80fa7fe71acab03e9c378c31f912d2766
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.17.1"
   sign_in_button:
     dependency: transitive
     description:
@@ -720,6 +728,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.0"
+  skeletonizer:
+    dependency: "direct main"
+    description:
+      name: skeletonizer
+      sha256: "0dcacc51c144af4edaf37672072156f49e47036becbc394d7c51850c5c1e884b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.3"
   sky_engine:
     dependency: transitive
     description: flutter

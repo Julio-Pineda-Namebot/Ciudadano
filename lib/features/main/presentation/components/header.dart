@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
-  const CustomHeader({super.key});
-
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const CustomHeader({super.key, required this.scaffoldKey});
+  
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -13,7 +14,7 @@ class CustomHeader extends StatelessWidget implements PreferredSizeWidget {
         icon: const Icon(Icons.menu),
         color: Colors.white,
         onPressed: () {
-          // Drawer
+          scaffoldKey.currentState?.openDrawer();
         },
       ),
       actions: [
