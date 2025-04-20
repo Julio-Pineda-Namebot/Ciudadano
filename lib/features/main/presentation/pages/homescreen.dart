@@ -1,3 +1,4 @@
+import 'package:ciudadano/features/home/home_page.dart';
 import 'package:ciudadano/features/main/presentation/components/header.dart';
 import 'package:ciudadano/features/main/presentation/components/navigations_bar.dart';
 import 'package:ciudadano/features/main/presentation/components/widgets/sidebar_menu.dart';
@@ -23,6 +24,19 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Widget _buildBody() {
+    switch (_selectedIndex) {
+      case 0:
+        return const HomePage();
+      case 1:
+        // return const CameraPage();
+      case 2:
+        // return const ProfilePage();
+      default:
+        return const Center(child: Text("Página no encontrada"));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +44,7 @@ class HomeScreenState extends State<HomeScreen> {
       appBar: CustomHeader(scaffoldKey: _scaffoldKey),
       drawer: SidebarMenu(controller: _sidebarController),
       body: Center(
-        child: Text("Página $_selectedIndex"),
+        child: _buildBody(),
       ),
       bottomNavigationBar: CustomNavigationBar(
         currentIndex: _selectedIndex,
