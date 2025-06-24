@@ -1,21 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ciudadano/config/theme/styles.dart';
-import 'package:splash_master/splash_master.dart';
-import 'package:ciudadano/features/auth/presentation/pages/loginscreen.dart';
-import 'package:ciudadano/features/main/presentation/bloc/presentation_bloc.dart';
-import 'package:ciudadano/features/main/presentation/pages/presentationscreen.dart';
+import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
+import "package:ciudadano/service_locator.dart";
+import "package:flutter/material.dart";
+import "package:lottie/lottie.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:ciudadano/config/theme/app_theme.dart";
+import "package:splash_master/splash_master.dart";
+import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
+import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_screen_page.dart";
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SplashMaster.initialize();
-
+  setUpServiceLocator();
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
-    ),
+    const MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()),
   );
 }
 
@@ -28,7 +26,7 @@ class SplashScreen extends StatelessWidget {
     double screenHeight = MediaQuery.of(context).size.height;
 
     return SplashMaster.lottie(
-      source: AssetSource('assets/lottie/splash_gif.json'),
+      source: AssetSource("assets/lottie/splash_gif.json"),
       lottieConfig: LottieConfig(
         repeat: false,
         animate: true,
@@ -55,14 +53,17 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => PresentationBloc()..add(CheckPresentationEvent()),
       child: MaterialApp(
-        title: 'Ciudadano',
+        title: "Ciudadano",
         debugShowCheckedModeBanner: false,
         theme: AppTheme.appTheme,
         home: BlocBuilder<PresentationBloc, PresentationState>(
           builder: (context, state) {
             return AnimatedSwitcher(
-              duration: Duration(milliseconds: 500),
-              child: state is PresentationNotSeen ? const PresentationScreen() : const MyLoginPage(),
+              duration: const Duration(milliseconds: 500),
+              child:
+                  state is PresentationNotSeen
+                      ? const PresentationScreenPage()
+                      : const LoginPage(),
             );
           },
         ),

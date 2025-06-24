@@ -1,4 +1,4 @@
-import 'package:ciudadano/features/home/incidents/data/entities/incident.dart';
+import "package:ciudadano/features/home/incidents/data/entities/incident.dart";
 
 class IncidentModel extends Incident {
   const IncidentModel({
@@ -14,14 +14,14 @@ class IncidentModel extends Incident {
 
   factory IncidentModel.fromJson(Map<String, dynamic> json) {
     return IncidentModel(
-      id: json['id'],
-      incidentType: json['incident_type'],
-      description: json['description'],
-      latitude: json['location_lat'].toDouble(),
-      longitude: json['location_lon'].toDouble(),
-      imageUrl: json['multimedia'],
-      createdAt: DateTime.parse(json['createad_at']),
-      happenedAt: DateTime.parse(json['happend_at']),
+      id: json["id"],
+      incidentType: json["incident_type"],
+      description: json["description"],
+      latitude: json["location_lat"].toDouble(),
+      longitude: json["location_lon"].toDouble(),
+      imageUrl: json["multimedia"],
+      createdAt: DateTime.parse(json["created_at"]),
+      happenedAt: DateTime.parse(json["happend_at"]),
     );
   }
 }

@@ -1,5 +1,5 @@
-import 'package:equatable/equatable.dart';
-import 'package:latlong2/latlong.dart';
+import "package:equatable/equatable.dart";
+import "package:latlong2/latlong.dart";
 
 abstract class MapEvent extends Equatable {
   @override
@@ -7,6 +7,7 @@ abstract class MapEvent extends Equatable {
 }
 
 class LoadCurrentLocation extends MapEvent {}
+
 class LoadIncidents extends MapEvent {}
 
 class UpdateLocation extends MapEvent {
