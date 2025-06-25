@@ -4,8 +4,9 @@ import "package:latlong2/latlong.dart";
 
 class LocationState {
   final LatLng? location;
+  final bool isLoading;
 
-  const LocationState(this.location);
+  const LocationState(this.location, {this.isLoading = false});
 }
 
 class LocationCubit extends Cubit<LocationState> {
@@ -24,8 +25,9 @@ class LocationCubit extends Cubit<LocationState> {
   }
 
   Future<void> loadInitialLocation() async {
+    emit(const LocationState(null, isLoading: true));
     final location = await _locationRepository.getCurrentLocation();
-    emit(LocationState(location));
+    emit(LocationState(location, isLoading: false));
   }
 
   LatLng? get currentLocation => state.location;

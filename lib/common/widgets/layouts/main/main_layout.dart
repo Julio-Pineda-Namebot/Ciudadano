@@ -1,13 +1,9 @@
-import "package:ciudadano/features/home/incidents/data/incident_remote_datasource.dart";
-import "package:ciudadano/features/home/incidents/presentation/bloc/map_bloc.dart";
-import "package:ciudadano/features/home/incidents/presentation/bloc/map_event.dart";
-import "package:ciudadano/features/home/incidents/presentation/widgets/create_incident_form.dart";
-import "package:ciudadano/features/home/incidents/repository/incident_repository_impl.dart";
-import "package:ciudadano/features/home/incidents/usercases/get_current_location.dart";
-import "package:ciudadano/features/home/incidents/usercases/get_incidents.dart";
+import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
+import "package:ciudadano/features/incidents/presentation/widgets/create_incident_form.dart";
 import "package:ciudadano/common/widgets/header.dart";
 import "package:ciudadano/common/widgets/navigations_bar.dart";
 import "package:ciudadano/common/widgets/sidebar_menu.dart";
+import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:sidebarx/sidebarx.dart";
@@ -34,7 +30,17 @@ class MainLayoutState extends State<MainLayout> {
     });
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(bool isLoading, bool locationExists) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (!locationExists) {
+      return const Center(
+        child: Text("No se pudo obtener la ubicación actual"),
+      );
+    }
+
     switch (_selectedIndex) {
       case 0:
         return const MainLayout();
@@ -53,20 +59,18 @@ class MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (context) => MapBloc(
-            getCurrentLocation: GetCurrentLocation(),
-            getNearbyIncidents: GetNearbyIncidents(
-              IncidentRepositoryImpl(
-                remoteDatasource: IncidentRemoteDatasource(),
-              ),
-            ),
-          )..add(LoadCurrentLocation()),
+      create: (context) => sl<LocationCubit>()..loadInitialLocation(),
       child: Scaffold(
         key: _scaffoldKey,
         appBar: CustomHeader(scaffoldKey: _scaffoldKey),
         drawer: SidebarMenu(controller: _sidebarController),
-        body: Center(child: _buildBody()),
+        body: BlocBuilder<LocationCubit, LocationState>(
+          builder: (context, state) {
+            return Center(
+              child: _buildBody(state.isLoading, state.location != null),
+            );
+          },
+        ),
         bottomNavigationBar: CustomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

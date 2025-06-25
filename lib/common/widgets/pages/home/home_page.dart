@@ -1,4 +1,4 @@
-import "package:ciudadano/features/home/incidents/presentation/page/map_page.dart";
+import "package:ciudadano/features/incidents/presentation/widgets/nearby_incidents_map.dart";
 import "package:flutter/material.dart";
 
 class HomePage extends StatelessWidget {
@@ -6,11 +6,11 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       children: [
-        SizedBox(height: 400, child: MapPage()),
-        SizedBox(height: 16),
-        Padding(
+        SizedBox(height: 400, child: NearbyIncidentsMap()),
+        const SizedBox(height: 16),
+        const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text("Contenido debajo del mapa"),
         ),
