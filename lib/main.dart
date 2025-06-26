@@ -1,4 +1,6 @@
 import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
+import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:lottie/lottie.dart";
@@ -50,8 +52,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PresentationBloc()..add(CheckPresentationEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) => PresentationBloc()..add(CheckPresentationEvent()),
+        ),
+        BlocProvider(create: (context) => sl<LocationCubit>()),
+        BlocProvider(create: (context) => sl<NearbyIncidentsBloc>()),
+      ],
       child: MaterialApp(
         title: "Ciudadano",
         debugShowCheckedModeBanner: false,

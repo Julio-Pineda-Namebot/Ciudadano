@@ -41,8 +41,17 @@ class NearbyIncidentsMap extends HookWidget {
       return null;
     }, [actualLocation]);
 
+    useEffect(() {
+      if (nearbyIncidentsState is NearbyIncidentsInitial) {
+        context.read<NearbyIncidentsBloc>().add(LoadNearbyIncidents());
+      }
+      return null;
+    }, [nearbyIncidentsState]);
+
     return Skeletonizer(
-      enabled: nearbyIncidentsState is NearbyIncidentsLoading,
+      enabled:
+          nearbyIncidentsState is NearbyIncidentsLoading ||
+          nearbyIncidentsState is NearbyIncidentsInitial,
       child: Stack(
         children: [
           FlutterMap(

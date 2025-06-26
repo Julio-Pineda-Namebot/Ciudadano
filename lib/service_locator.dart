@@ -13,6 +13,15 @@ import "package:get_it/get_it.dart";
 final sl = GetIt.instance;
 
 void setUpServiceLocator() {
+  // Utils
+  sl.registerSingleton<FlutterSecureStorage>(const FlutterSecureStorage());
+  sl.registerSingleton<DioClient>(
+    DioClient(() async {
+      final token = await sl<FlutterSecureStorage>().read(key: "auth_token");
+      return token;
+    }),
+  );
+
   // Sources
   sl.registerSingleton<IncidentApiService>(IncidentApiService());
 
@@ -24,15 +33,6 @@ void setUpServiceLocator() {
 
   //Use Cases
   sl.registerSingleton(GetNearbyIncidents(sl<IncidentRepository>()));
-
-  // Utils
-  sl.registerSingleton<FlutterSecureStorage>(const FlutterSecureStorage());
-  sl.registerSingleton<DioClient>(
-    DioClient(() async {
-      final token = await sl<FlutterSecureStorage>().read(key: "auth_token");
-      return token;
-    }),
-  );
 
   // Cubits and Blocs
   sl.registerLazySingleton(() => LocationCubit(sl<LocationRepository>()));

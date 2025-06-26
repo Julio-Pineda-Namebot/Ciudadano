@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:ciudadano/features/geolocalization/domain/repository/location_repository.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:latlong2/latlong.dart";
@@ -11,16 +13,19 @@ class LocationState {
 
 class LocationCubit extends Cubit<LocationState> {
   final LocationRepository _locationRepository;
-  Stream<LatLng>? _locationStream;
+  StreamSubscription<LatLng>? _locationSubscription;
 
   LocationCubit(this._locationRepository) : super(const LocationState(null)) {
     _startListening();
   }
 
   void _startListening() {
-    _locationStream = _locationRepository.getLocationStream();
-    _locationStream!.listen((location) {
-      emit(LocationState(location));
+    _locationSubscription = _locationRepository.getLocationStream().listen((
+      location,
+    ) {
+      if (!isClosed) {
+        emit(LocationState(location));
+      }
     });
   }
 
@@ -28,6 +33,12 @@ class LocationCubit extends Cubit<LocationState> {
     emit(const LocationState(null, isLoading: true));
     final location = await _locationRepository.getCurrentLocation();
     emit(LocationState(location, isLoading: false));
+  }
+
+  @override
+  Future<void> close() {
+    _locationSubscription?.cancel();
+    return super.close();
   }
 
   LatLng? get currentLocation => state.location;
