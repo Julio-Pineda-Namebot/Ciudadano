@@ -23,7 +23,7 @@ class SocketSource {
       final completer = Completer<void>();
       final token = await sl<FlutterSecureStorage>().read(key: "auth_token");
       _socket = IO.io(
-        "http://192.168.0.5:3000",
+        "https://ciudadano-production.up.railway.app",
         IO.OptionBuilder()
             .setTransports(["websocket"])
             .setPath("/api/socket")

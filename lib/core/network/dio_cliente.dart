@@ -9,7 +9,7 @@ class DioClient {
     : _dio = Dio(
           BaseOptions(
             headers: {"Content-Type": "application/json; charset=UTF-8"},
-            baseUrl: "http://192.168.0.5:3000/api",
+            baseUrl: "https://ciudadano-production.up.railway.app/api",
             responseType: ResponseType.json,
             sendTimeout: const Duration(seconds: 60),
             receiveTimeout: const Duration(seconds: 60),
