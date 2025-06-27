@@ -47,9 +47,9 @@ class MainLayoutState extends State<MainLayout> {
     if (_isLocationAvailable) {
       return IndexedStack(
         index: _selectedIndex,
-        children: const [
-          HomePage(),
-          CreateIncidentPage(),
+        children: [
+          const HomePage(),
+          CreateIncidentPage(onCreateIncident: () => _onItemTapped(0)),
           // ProfilePage(), // Uncomment when ProfilePage is implemented
         ],
       );

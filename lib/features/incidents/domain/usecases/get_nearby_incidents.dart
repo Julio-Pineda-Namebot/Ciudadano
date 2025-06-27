@@ -4,11 +4,11 @@ import "package:ciudadano/features/incidents/domain/repository/incident_reposito
 import "package:dartz/dartz.dart";
 import "package:latlong2/latlong.dart";
 
-class GetNearbyIncidents
-    implements UserCase<Either<String, List<Incident>>, LatLng> {
+class GetNearbyIncidentsUseCase
+    implements UseCase<Either<String, List<Incident>>, LatLng> {
   final IncidentRepository _incidentRepository;
 
-  const GetNearbyIncidents(this._incidentRepository);
+  const GetNearbyIncidentsUseCase(this._incidentRepository);
 
   @override
   Future<Either<String, List<Incident>>> call(LatLng location) {

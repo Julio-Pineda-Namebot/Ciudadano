@@ -2,6 +2,7 @@ import "dart:io";
 
 import "package:ciudadano/core/network/dio_cliente.dart";
 import "package:ciudadano/features/incidents/data/models/incident_model.dart";
+import "package:ciudadano/features/incidents/domain/entities/create_incident.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:dartz/dartz.dart";
 import "package:dio/dio.dart";
@@ -45,22 +46,19 @@ class IncidentApiService {
     }
   }
 
-  Future<Either<String, IncidentModel>> createIncident({
-    required String description,
-    required String incidentType,
-    required File image,
-    required LatLng location,
-  }) async {
+  Future<Either<String, IncidentModel>> createIncident(
+    CreateIncident incident,
+  ) async {
     try {
-      final formData = FormData.fromMap({
-        "description": description,
-        "incident_type": incidentType,
-        "image": await MultipartFile.fromFile(image.path),
-        "location_lat": location.latitude,
-        "location_lon": location.longitude,
-      });
+      final formData = await incident.toFormData();
 
-      final response = await _dio.post("/incidents/", data: formData);
+      final response = await _dio.post(
+        "/incidents",
+        data: formData,
+        options: Options(
+          headers: {HttpHeaders.contentTypeHeader: "multipart/form-data"},
+        ),
+      );
 
       return Right(IncidentModel.fromJson(response.data["data"]));
     } on DioException catch (e) {

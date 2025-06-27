@@ -1,4 +1,5 @@
 import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
+import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/service_locator.dart";
@@ -60,6 +61,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => sl<LocationCubit>()),
         BlocProvider(create: (context) => sl<NearbyIncidentsBloc>()),
+        BlocProvider(create: (context) => sl<SocketBloc>()),
       ],
       child: MaterialApp(
         title: "Ciudadano",

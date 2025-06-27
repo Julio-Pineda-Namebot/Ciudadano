@@ -12,12 +12,13 @@ part "nearby_incidents_event.dart";
 part "nearby_incidents_state.dart";
 
 class NearbyIncidentsBloc
-    extends Bloc<NearbyIncidentsMapEvent, NearbyIncidentsState> {
-  final GetNearbyIncidents getNearbyIncidents;
+    extends Bloc<NearbyIncidentsEvent, NearbyIncidentsState> {
+  final GetNearbyIncidentsUseCase getNearbyIncidents;
 
   NearbyIncidentsBloc(this.getNearbyIncidents)
     : super(NearbyIncidentsInitial()) {
     on<LoadNearbyIncidents>(_onLoadIncidents);
+    on<NearbyIncidentReportedEvent>(_onIncidentReported);
   }
 
   Future<void> _onLoadIncidents(
@@ -45,5 +46,17 @@ class NearbyIncidentsBloc
         emit(NearbyIncidentsLoaded(actuaLocation, incidents));
       },
     );
+  }
+
+  Future<void> _onIncidentReported(
+    NearbyIncidentReportedEvent event,
+    Emitter<NearbyIncidentsState> emit,
+  ) async {
+    if (state is NearbyIncidentsLoaded) {
+      final currentState = state as NearbyIncidentsLoaded;
+      final updatedIncidents = List<Incident>.from(currentState.incidents)
+        ..add(event.incident);
+      emit(NearbyIncidentsLoaded(currentState.location, updatedIncidents));
+    }
   }
 }

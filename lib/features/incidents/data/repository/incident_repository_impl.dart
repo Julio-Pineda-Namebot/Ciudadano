@@ -1,8 +1,10 @@
 import "dart:io";
 
+import "package:ciudadano/features/incidents/domain/entities/create_incident.dart";
 import "package:ciudadano/features/incidents/domain/repository/incident_repository.dart";
 import "package:ciudadano/features/incidents/data/source/incident_api_service.dart";
 import "package:ciudadano/features/incidents/domain/entities/incident.dart";
+import "package:ciudadano/features/incidents/domain/usecases/create_incident_use_case.dart";
 import "package:dartz/dartz.dart";
 import "package:latlong2/latlong.dart";
 
@@ -12,18 +14,8 @@ class IncidentRepositoryImpl implements IncidentRepository {
   const IncidentRepositoryImpl(this._incidentApiService);
 
   @override
-  Future<Either<String, Incident>> createIncident({
-    required String description,
-    required String incidentType,
-    required File image,
-    required LatLng location,
-  }) {
-    return _incidentApiService.createIncident(
-      description: description,
-      incidentType: incidentType,
-      image: image,
-      location: location,
-    );
+  Future<Either<String, Incident>> createIncident(CreateIncident incident) {
+    return _incidentApiService.createIncident(incident);
   }
 
   @override

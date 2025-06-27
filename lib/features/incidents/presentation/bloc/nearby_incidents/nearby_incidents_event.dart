@@ -1,16 +1,17 @@
 part of "nearby_incidents_bloc.dart";
 
-abstract class NearbyIncidentsMapEvent extends Equatable {
+abstract class NearbyIncidentsEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
 
-class LoadNearbyIncidents extends NearbyIncidentsMapEvent {}
+class LoadNearbyIncidents extends NearbyIncidentsEvent {}
 
-class UpdateLocation extends NearbyIncidentsMapEvent {
-  final LatLng location;
-  UpdateLocation(this.location);
+class NearbyIncidentReportedEvent extends NearbyIncidentsEvent {
+  final Incident incident;
+
+  NearbyIncidentReportedEvent(this.incident);
 
   @override
-  List<Object?> get props => [location];
+  List<Object?> get props => [incident];
 }
