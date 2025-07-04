@@ -1,4 +1,3 @@
-import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/incident_marker.dart";
@@ -34,28 +33,6 @@ class NearbyIncidentsMap extends HookWidget {
 
     final locationCubit = useBloc<LocationCubit, LocationState>();
     final actualLocation = locationCubit.location!;
-
-    useEffect(() {
-      if (nearbyIncidentsState is NearbyIncidentsInitial) {
-        context.read<NearbyIncidentsBloc>().add(LoadNearbyIncidents());
-      }
-      return null;
-    }, [nearbyIncidentsState]);
-
-    final socketConnectionState = useBloc<SocketBloc, SocketState>();
-
-    useEffect(() {
-      if (socketConnectionState is SocketConnectedState) {
-        context.read<SocketBloc>().add(
-          ListenIncidentsReportedEvent((incident) {
-            context.read<NearbyIncidentsBloc>().add(
-              NearbyIncidentReportedEvent(incident),
-            );
-          }),
-        );
-      }
-      return null;
-    }, [socketConnectionState]);
 
     return Skeletonizer(
       enabled:

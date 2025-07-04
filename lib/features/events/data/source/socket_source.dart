@@ -1,6 +1,8 @@
 import "dart:async";
 
+import "package:ciudadano/config/api/api_config.dart";
 import "package:ciudadano/service_locator.dart";
+import "package:flutter/material.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:latlong2/latlong.dart";
 // ignore: library_prefixes
@@ -23,7 +25,7 @@ class SocketSource {
       final completer = Completer<void>();
       final token = await sl<FlutterSecureStorage>().read(key: "auth_token");
       _socket = IO.io(
-        "https://ciudadano-production.up.railway.app",
+        ApiConfig.ac,
         IO.OptionBuilder()
             .setTransports(["websocket"])
             .setPath("/api/socket")
@@ -37,11 +39,11 @@ class SocketSource {
       );
 
       _socket.onDisconnect((_) {
-        print("Disconnected from socket server");
+        debugPrint("Disconnected from socket server");
       });
 
       _socket.onConnect((_) {
-        print("Connected to socket server");
+        debugPrint("Connected to socket server");
         _sendLocation(location);
         if (!completer.isCompleted) {
           completer.complete();
@@ -49,14 +51,14 @@ class SocketSource {
       });
 
       _socket.onConnectError((data) {
-        print("Connection error: $data");
+        debugPrint("Connection error: $data");
         if (!completer.isCompleted) {
           completer.completeError(Exception("Socket connection error: $data"));
         }
       });
 
       _socket.onError((data) {
-        print("Socket error: $data");
+        debugPrint("Socket error: $data");
         if (!completer.isCompleted) {
           completer.completeError(Exception("Socket error: $data"));
         }
@@ -64,7 +66,7 @@ class SocketSource {
 
       await completer.future;
     } catch (e) {
-      print("Error connecting to socket server: $e");
+      debugPrint("Error connecting to socket server: $e");
       throw Exception("Failed to connect to socket server");
     }
   }
@@ -73,10 +75,10 @@ class SocketSource {
     String channel, {
     Function(Map<String, dynamic>)? onData,
   }) {
-    print("Connecting to channel: $channel");
+    debugPrint("Connecting to channel: $channel");
     if (_socket.connected) {
       _socket.on(channel, (data) {
-        print("Received data on channel $channel: $data");
+        debugPrint("Received data on channel $channel: $data");
         if (onData != null) {
           onData(data);
         }
@@ -87,7 +89,7 @@ class SocketSource {
   void disconnectChannel(String channel) {
     if (_socket.connected) {
       _socket.off(channel);
-      print("Disconnected from channel $channel");
+      debugPrint("Disconnected from channel $channel");
     }
   }
 

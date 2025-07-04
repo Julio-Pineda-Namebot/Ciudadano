@@ -20,12 +20,12 @@ mixin AppTheme {
           foregroundColor: Colors.white,
         ),
       ),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-        ),
-      ),
+      // iconButtonTheme: IconButtonThemeData(
+      //   style: IconButton.styleFrom(
+      //     backgroundColor: Colors.black,
+      //     foregroundColor: Colors.white,
+      //   ),
+      // ),
     );
   }
 }

@@ -23,6 +23,7 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
       final profile = await _datasource.getProfile();
       emit(
         state.copyWith(
+          id: profile.id,
           name: "${profile.firstName} ${profile.lastName}",
           dni: profile.dni,
           email: profile.email,

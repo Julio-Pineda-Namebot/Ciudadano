@@ -2,6 +2,9 @@ import "package:ciudadano/common/widgets/header.dart";
 import "package:ciudadano/common/widgets/navigations_bar.dart";
 import "package:ciudadano/common/widgets/pages/home/home_page.dart";
 import "package:ciudadano/common/widgets/sidebar_menu.dart";
+import "package:ciudadano/features/chats/presentation/pages/chats_page.dart";
+import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
+import "package:ciudadano/features/events/presentation/bloc/socket_bloc_listeners.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/page/create_incident_page.dart";
 import "package:flutter/material.dart";
@@ -24,34 +27,40 @@ class MainLayoutState extends State<MainLayout> {
 
   int _selectedIndex = 0;
 
+  @override
+  void dispose() {
+    _sidebarController.dispose();
+    super.dispose();
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    context.read<LocationCubit>().loadInitialLocation();
-  }
-
-  bool _isLocationLoading = true;
-  bool _isLocationAvailable = false;
-
-  Widget _buildBody() {
-    if (_isLocationLoading) {
+  Widget _buildBody(bool isLocationLoading, bool isLocationAvailable) {
+    if (isLocationLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (_isLocationAvailable) {
-      return IndexedStack(
-        index: _selectedIndex,
-        children: [
-          const HomePage(),
-          CreateIncidentPage(onCreateIncident: () => _onItemTapped(0)),
-          // ProfilePage(), // Uncomment when ProfilePage is implemented
-        ],
+    if (isLocationAvailable) {
+      return BlocListener<SocketBloc, SocketState>(
+        listener: (context, state) {
+          if (state is SocketConnectedState) {
+            incidentsCreated(context);
+            chatGroupCreated(context);
+            chatGroupMessageSent(context);
+          }
+        },
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            const HomePage(),
+            CreateIncidentPage(onCreateIncident: () => _onItemTapped(0)),
+            const ChatsPage(),
+          ],
+        ),
       );
     }
 
@@ -60,41 +69,28 @@ class MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LocationCubit, LocationState>(
-      listener: (context, state) {
-        if (state.location != null) {
-          setState(() {
-            _isLocationAvailable = true;
-            _isLocationLoading = state.isLoading;
-          });
-        } else if (state.isLoading) {
-          setState(() {
-            _isLocationAvailable = false;
-            _isLocationLoading = true;
-          });
-        } else {
-          setState(() {
-            _isLocationAvailable = false;
-            _isLocationLoading = false;
-          });
-        }
+    return BlocBuilder<LocationCubit, LocationState>(
+      builder: (context, state) {
+        final isLocationLoading = state.isLoading;
+        final isLocationAvailable = state.location != null;
+
+        return Scaffold(
+          key: _scaffoldKey,
+          appBar: CustomHeader(scaffoldKey: _scaffoldKey),
+          drawer:
+              isLocationAvailable
+                  ? SidebarMenu(controller: _sidebarController)
+                  : null,
+          body: _buildBody(isLocationLoading, isLocationAvailable),
+          bottomNavigationBar:
+              isLocationAvailable
+                  ? CustomNavigationBar(
+                    currentIndex: _selectedIndex,
+                    onTap: _onItemTapped,
+                  )
+                  : null,
+        );
       },
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: CustomHeader(scaffoldKey: _scaffoldKey),
-        drawer:
-            _isLocationAvailable
-                ? SidebarMenu(controller: _sidebarController)
-                : null,
-        body: _buildBody(),
-        bottomNavigationBar:
-            _isLocationAvailable
-                ? CustomNavigationBar(
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                )
-                : null,
-      ),
     );
   }
 }

@@ -1,7 +1,6 @@
-import "package:ciudadano/features/events/domain/usecases/connect_to_socket_use_case.dart";
-import "package:ciudadano/features/events/domain/usecases/disconnect_incidents_reported_use_case.dart";
-import "package:ciudadano/features/events/domain/usecases/disconnect_to_socket_use_case.dart";
-import "package:ciudadano/features/events/domain/usecases/listen_incidents_reported_use_case.dart";
+import "package:ciudadano/features/chats/domain/entity/chat_group.dart";
+import "package:ciudadano/features/chats/domain/entity/chat_message.dart";
+import "package:ciudadano/features/events/domain/repository/socket_repository.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/domain/entities/incident.dart";
 import "package:ciudadano/service_locator.dart";
@@ -12,21 +11,17 @@ part "socket_event.dart";
 part "socket_state.dart";
 
 class SocketBloc extends Bloc<SocketEvent, SocketState> {
-  final ConnectToSocketUseCase _connectToSocketUseCase;
-  final DisconnectFromSocketUseCase _disconnectFromSocketUseCase;
-  final ListenIncidentsReportedUseCase _listenIncidentsReportedUseCase;
-  final DisconnectIncidentsReportedUseCase _disconnectIncidentsReportedUseCase;
+  final SocketRepository _socketRepository;
 
-  SocketBloc(
-    this._connectToSocketUseCase,
-    this._disconnectFromSocketUseCase,
-    this._listenIncidentsReportedUseCase,
-    this._disconnectIncidentsReportedUseCase,
-  ) : super(SocketInitial()) {
+  SocketBloc(this._socketRepository) : super(SocketInitial()) {
     on<ConnectToSocketEvent>(_onConnectToSocket);
     on<DisconnectFromSocketEvent>(_onDisconnectFromSocket);
     on<ListenIncidentsReportedEvent>(_onListenIncidentsReported);
     on<DisconnectIncidentsReportedEvent>(_onDisconnectIncidentsReported);
+    on<ListenChatGroupCreatedEvent>(_onListenChatGroupCreated);
+    on<DisconnectChatGroupCreatedEvent>(_onDisconnectChatGroupCreated);
+    on<ListenChatGroupMessageSentEvent>(_onListenChatGroupMessageSent);
+    on<DisconnectChatGroupMessageSentEvent>(_onDisconnectChatGroupMessageSent);
   }
 
   Future<void> _onConnectToSocket(
@@ -39,31 +34,63 @@ class SocketBloc extends Bloc<SocketEvent, SocketState> {
       return;
     }
 
-    await _connectToSocketUseCase(location);
+    await _socketRepository.connect(location);
     emit(SocketConnectedState());
   }
 
-  Future<void> _onDisconnectFromSocket(
+  void _onDisconnectFromSocket(
     DisconnectFromSocketEvent event,
     Emitter<SocketState> emit,
-  ) async {
-    await _disconnectFromSocketUseCase({});
+  ) {
+    _socketRepository.disconnect();
     emit(SocketDisconnectedState());
   }
 
-  Future<void> _onListenIncidentsReported(
+  void _onListenIncidentsReported(
     ListenIncidentsReportedEvent event,
     Emitter<SocketState> emit,
-  ) async {
-    await _listenIncidentsReportedUseCase(
-      (incident) => event.onIncidentReported(incident),
-    );
+  ) {
+    _socketRepository.listenIncidentsReported((incident) {
+      event.onIncidentReported(incident);
+    });
   }
 
-  Future<void> _onDisconnectIncidentsReported(
+  void _onDisconnectIncidentsReported(
     DisconnectIncidentsReportedEvent event,
     Emitter<SocketState> emit,
-  ) async {
-    await _disconnectIncidentsReportedUseCase({});
+  ) {
+    _socketRepository.disconnectIncidentsReported();
+  }
+
+  void _onListenChatGroupCreated(
+    ListenChatGroupCreatedEvent event,
+    Emitter<SocketState> emit,
+  ) {
+    _socketRepository.listenChatGroupCreated((chatGroup) {
+      event.onChatGroupCreated(chatGroup);
+    });
+  }
+
+  void _onDisconnectChatGroupCreated(
+    DisconnectChatGroupCreatedEvent event,
+    Emitter<SocketState> emit,
+  ) {
+    _socketRepository.disconnectChatGroupCreated();
+  }
+
+  void _onListenChatGroupMessageSent(
+    ListenChatGroupMessageSentEvent event,
+    Emitter<SocketState> emit,
+  ) {
+    _socketRepository.listenChatGroupMessageSent((chatMessage) {
+      event.onChatGroupMessageSent(chatMessage);
+    });
+  }
+
+  void _onDisconnectChatGroupMessageSent(
+    DisconnectChatGroupMessageSentEvent event,
+    Emitter<SocketState> emit,
+  ) {
+    _socketRepository.disconnectChatGroupMessageSent();
   }
 }

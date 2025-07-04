@@ -20,3 +20,20 @@ class ListenIncidentsReportedEvent extends SocketEvent {
 }
 
 class DisconnectIncidentsReportedEvent extends SocketEvent {}
+
+// Chats
+class ListenChatGroupCreatedEvent extends SocketEvent {
+  final Function(ChatGroup) onChatGroupCreated;
+
+  ListenChatGroupCreatedEvent(this.onChatGroupCreated);
+}
+
+class DisconnectChatGroupCreatedEvent extends SocketEvent {}
+
+class ListenChatGroupMessageSentEvent extends SocketEvent {
+  final Function(ChatMessage) onChatGroupMessageSent;
+
+  ListenChatGroupMessageSentEvent(this.onChatGroupMessageSent);
+}
+
+class DisconnectChatGroupMessageSentEvent extends SocketEvent {}

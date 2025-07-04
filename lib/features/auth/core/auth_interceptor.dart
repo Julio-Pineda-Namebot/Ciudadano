@@ -1,11 +1,14 @@
+import "package:ciudadano/service_locator.dart";
 import "package:dio/dio.dart";
 import "package:flutter/foundation.dart";
+import "package:flutter_secure_storage/flutter_secure_storage.dart";
 
 class AuthInterceptor extends Interceptor {
-  final Future<String?> Function() getToken;
   String? _cachedToken;
 
-  AuthInterceptor({required this.getToken});
+  final FlutterSecureStorage secureStorage = sl<FlutterSecureStorage>();
+
+  AuthInterceptor();
 
   @override
   void onRequest(
@@ -19,7 +22,7 @@ class AuthInterceptor extends Interceptor {
   }
 
   Future<String?> getCachedToken() async {
-    _cachedToken ??= await getToken();
+    _cachedToken ??= await secureStorage.read(key: "auth_token");
     return _cachedToken;
   }
 }

@@ -1,24 +1,21 @@
 import "package:ciudadano/core/network/logger_interceptor.dart";
 import "package:dio/dio.dart";
 import "package:ciudadano/features/auth/core/auth_interceptor.dart";
+import "package:ciudadano/config/api/api_config.dart";
 
 class DioClient {
   late final Dio _dio;
 
-  DioClient(Future<String?> Function() getToken)
+  DioClient()
     : _dio = Dio(
-          BaseOptions(
-            headers: {"Content-Type": "application/json; charset=UTF-8"},
-            baseUrl: "https://ciudadano-production.up.railway.app/api",
-            responseType: ResponseType.json,
-            sendTimeout: const Duration(seconds: 60),
-            receiveTimeout: const Duration(seconds: 60),
-          ),
-        )
-        ..interceptors.addAll([
-          LoggerInterceptor(),
-          AuthInterceptor(getToken: getToken),
-        ]);
+        BaseOptions(
+          headers: {"Content-Type": "application/json; charset=UTF-8"},
+          baseUrl: "${ApiConfig.ac}/api",
+          responseType: ResponseType.json,
+          sendTimeout: const Duration(seconds: 60),
+          receiveTimeout: const Duration(seconds: 60),
+        ),
+      )..interceptors.addAll([LoggerInterceptor(), AuthInterceptor()]);
 
   // GET METHOD
   Future<Response> get(

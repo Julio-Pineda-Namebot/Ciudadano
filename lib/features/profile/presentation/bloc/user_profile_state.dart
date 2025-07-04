@@ -1,6 +1,7 @@
 import "package:equatable/equatable.dart";
 
 class UserProfileState extends Equatable {
+  final String id;
   final String name;
   final String dni;
   final String email;
@@ -9,6 +10,7 @@ class UserProfileState extends Equatable {
   final bool pushNotifications;
 
   const UserProfileState({
+    this.id = "",
     this.name = "",
     this.dni = "",
     this.email = "",
@@ -18,6 +20,7 @@ class UserProfileState extends Equatable {
   });
 
   UserProfileState copyWith({
+    String? id,
     String? name,
     String? dni,
     String? email,
@@ -26,6 +29,7 @@ class UserProfileState extends Equatable {
     bool? pushNotifications,
   }) {
     return UserProfileState(
+      id: id ?? this.id,
       name: name ?? this.name,
       dni: dni ?? this.dni,
       email: email ?? this.email,

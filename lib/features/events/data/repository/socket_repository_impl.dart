@@ -1,3 +1,7 @@
+import "package:ciudadano/features/chats/data/model/chat_group_model.dart";
+import "package:ciudadano/features/chats/data/model/chat_message_model.dart";
+import "package:ciudadano/features/chats/domain/entity/chat_group.dart";
+import "package:ciudadano/features/chats/domain/entity/chat_message.dart";
 import "package:ciudadano/features/events/data/source/socket_source.dart";
 import "package:ciudadano/features/events/domain/repository/socket_repository.dart";
 import "package:ciudadano/features/incidents/data/models/incident_model.dart";
@@ -30,5 +34,41 @@ class SocketRepositoryImpl implements SocketRepository {
   @override
   void disconnectIncidentsReported() {
     _socketSource.disconnectChannel("incident:reported");
+  }
+
+  @override
+  void listenChatGroupCreated(
+    Function(ChatGroup chatGroup) onChatGroupCreated,
+  ) {
+    _socketSource.subscribeChannel(
+      "chat_group:created",
+      onData: (data) {
+        final chatGroup = ChatGroupModel.fromJson(data);
+        onChatGroupCreated(chatGroup);
+      },
+    );
+  }
+
+  @override
+  void disconnectChatGroupCreated() {
+    _socketSource.disconnectChannel("chat_group:created");
+  }
+
+  @override
+  void listenChatGroupMessageSent(
+    Function(ChatMessage chatMessage) onChatGroupMessage,
+  ) {
+    _socketSource.subscribeChannel(
+      "chat_group:message_sent",
+      onData: (data) {
+        final chatMessage = ChatMessageModel.fromJson(data);
+        onChatGroupMessage(chatMessage);
+      },
+    );
+  }
+
+  @override
+  void disconnectChatGroupMessageSent() {
+    _socketSource.disconnectChannel("chat_group:message_sent");
   }
 }

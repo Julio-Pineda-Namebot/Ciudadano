@@ -1,15 +1,23 @@
+import "package:ciudadano/common/widgets/layouts/main/main_layout.dart";
 import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
+import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_screen_page.dart";
+import "package:ciudadano/config/theme/app_theme.dart";
+import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
+import "package:ciudadano/features/chats/presentation/bloc/contacts/chat_contacts_bloc.dart";
+import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
 import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
+import "package:ciudadano/features/profile/data/profile_remote_datasource.dart";
+import "package:ciudadano/features/profile/presentation/bloc/user_profile_bloc.dart";
+import "package:ciudadano/features/profile/presentation/bloc/user_profile_event.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
-import "package:lottie/lottie.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
-import "package:ciudadano/config/theme/app_theme.dart";
+import "package:flutter_secure_storage/flutter_secure_storage.dart";
+import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
-import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
-import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_screen_page.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +59,23 @@ class SplashScreen extends StatelessWidget {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<bool> _isLoggedIn() async {
+    final secureStorage = sl<FlutterSecureStorage>();
+    final profileDatasource = ProfileRemoteDatasource();
+    final token = await secureStorage.read(key: "auth_token");
+
+    if (token == null || token.isEmpty) {
+      return false;
+    }
+
+    try {
+      await profileDatasource.getProfile();
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -59,9 +84,27 @@ class MyApp extends StatelessWidget {
           create:
               (context) => PresentationBloc()..add(CheckPresentationEvent()),
         ),
-        BlocProvider(create: (context) => sl<LocationCubit>()),
-        BlocProvider(create: (context) => sl<NearbyIncidentsBloc>()),
-        BlocProvider(create: (context) => sl<SocketBloc>()),
+        BlocProvider(
+          create: (context) => sl<LocationCubit>()..loadInitialLocation(),
+        ),
+        BlocProvider(
+          create:
+              (context) =>
+                  sl<NearbyIncidentsBloc>()..add(LoadNearbyIncidents()),
+        ),
+        BlocProvider(
+          create: (context) => sl<SocketBloc>()..add(ConnectToSocketEvent()),
+        ),
+        BlocProvider(create: (context) => sl<ChatGroupsBloc>()),
+        BlocProvider(
+          create:
+              (context) =>
+                  sl<ChatContactsBloc>()..add(const LoadChatContacts()),
+        ),
+        BlocProvider(create: (context) => sl<GroupMessagesCubit>()),
+        BlocProvider(
+          create: (context) => sl<UserProfileBloc>()..add(FetchProfile()),
+        ),
       ],
       child: MaterialApp(
         title: "Ciudadano",
@@ -74,7 +117,25 @@ class MyApp extends StatelessWidget {
               child:
                   state is PresentationNotSeen
                       ? const PresentationScreenPage()
-                      : const LoginPage(),
+                      : FutureBuilder(
+                        future: _isLoggedIn(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          if (snapshot.hasError) {
+                            return const LoginPage();
+                          }
+
+                          return snapshot.data!
+                              ? const MainLayout()
+                              : const LoginPage();
+                        },
+                      ),
             );
           },
         ),
