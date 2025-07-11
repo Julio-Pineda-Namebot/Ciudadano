@@ -2,11 +2,13 @@ import "package:ciudadano/common/widgets/header.dart";
 import "package:ciudadano/common/widgets/navigations_bar.dart";
 import "package:ciudadano/common/widgets/pages/home/home_page.dart";
 import "package:ciudadano/common/widgets/sidebar_menu.dart";
+import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
 import "package:ciudadano/features/chats/presentation/pages/chats_page.dart";
 import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/events/presentation/bloc/socket_bloc_listeners.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/page/create_incident_page.dart";
+import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:sidebarx/sidebarx.dart";
@@ -74,21 +76,35 @@ class MainLayoutState extends State<MainLayout> {
         final isLocationLoading = state.isLoading;
         final isLocationAvailable = state.location != null;
 
-        return Scaffold(
-          key: _scaffoldKey,
-          appBar: CustomHeader(scaffoldKey: _scaffoldKey),
-          drawer:
-              isLocationAvailable
-                  ? SidebarMenu(controller: _sidebarController)
-                  : null,
-          body: _buildBody(isLocationLoading, isLocationAvailable),
-          bottomNavigationBar:
-              isLocationAvailable
-                  ? CustomNavigationBar(
-                    currentIndex: _selectedIndex,
-                    onTap: _onItemTapped,
-                  )
-                  : null,
+        return MultiBlocListener(
+          listeners: [
+            BlocListener<LogoutBloc, LogoutState>(
+              listener: (context, state) {
+                if (state is LogoutSuccess) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginPage()),
+                    (route) => false,
+                  );
+                }
+              },
+            ),
+          ],
+          child: Scaffold(
+            key: _scaffoldKey,
+            appBar: CustomHeader(scaffoldKey: _scaffoldKey),
+            drawer:
+                isLocationAvailable
+                    ? SidebarMenu(controller: _sidebarController)
+                    : null,
+            body: _buildBody(isLocationLoading, isLocationAvailable),
+            bottomNavigationBar:
+                isLocationAvailable
+                    ? CustomNavigationBar(
+                      currentIndex: _selectedIndex,
+                      onTap: _onItemTapped,
+                    )
+                    : null,
+          ),
         );
       },
     );

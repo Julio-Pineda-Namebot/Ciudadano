@@ -1,6 +1,8 @@
 import "package:ciudadano/common/widgets/pages/about/about_page.dart";
 import "package:ciudadano/features/profile/presentation/pages/user_profile_page.dart";
+import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:sidebarx/sidebarx.dart";
 
 class SidebarMenu extends StatelessWidget {
@@ -87,7 +89,10 @@ class SidebarMenu extends StatelessWidget {
         selectedItemTextPadding: const EdgeInsets.only(left: 20),
       ),
       footerItems: [
-        SidebarXItem(icon: Icons.logout, label: "Cerrar Sesión", onTap: () {}),
+        SidebarXItem(icon: Icons.logout, label: "Cerrar Sesión", onTap: () {
+          controller.selectIndex(-1);
+          context.read<LogoutBloc>().add(LogoutPressed());
+        }),
       ],
       extendedTheme: const SidebarXTheme(width: 250),
     );

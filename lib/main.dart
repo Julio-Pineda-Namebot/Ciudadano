@@ -14,6 +14,7 @@ import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/
 import "package:ciudadano/features/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/profile/presentation/bloc/user_profile_event.dart";
+import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
@@ -83,6 +84,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(create: (_) => sl<LogoutBloc>()),
         BlocProvider(
           create:
               (context) => PresentationBloc()..add(CheckPresentationEvent()),

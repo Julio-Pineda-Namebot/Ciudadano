@@ -28,6 +28,8 @@ import "package:ciudadano/features/incidents/domain/usecases/get_nearby_incident
 import "package:ciudadano/features/incidents/presentation/bloc/create_incident/create_incident_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/profile/presentation/bloc/user_profile_bloc.dart";
+import "package:ciudadano/features/sidebar/logout/data/logout_datasource.dart";
+import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:get_it/get_it.dart";
 
@@ -80,4 +82,8 @@ void setUpServiceLocator() {
     () => SendMessageToGroupCubit(sl<SendMessageToGroupUseCase>()),
   );
   sl.registerFactory(() => UserProfileBloc());
+
+  // Logout
+  sl.registerSingleton<LogoutDatasource>(LogoutDatasource(sl()));
+  sl.registerFactory(() => LogoutBloc(sl()));
 }
