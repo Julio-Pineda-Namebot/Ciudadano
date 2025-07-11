@@ -22,7 +22,7 @@ class AuthInterceptor extends Interceptor {
   }
 
   Future<String?> getCachedToken() async {
-    _cachedToken ??= await secureStorage.read(key: "auth_token");
+    _cachedToken = await secureStorage.read(key: "auth_token");
     return _cachedToken;
   }
 }
