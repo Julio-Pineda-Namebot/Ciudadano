@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:ciudadano/common/widgets/layouts/main/main_layout.dart";
 import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
 import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_screen_page.dart";
@@ -33,17 +35,18 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    // double screenWidth = MediaQuery.of(context).size.width;
+    // double screenHeight = MediaQuery.of(context).size.height;
 
     return SplashMaster.lottie(
-      source: AssetSource("assets/lottie/splash_gif.json"),
+      source: AssetSource("assets/lottie/splash_screen.json"),
       lottieConfig: LottieConfig(
         repeat: false,
         animate: true,
-        width: screenWidth * 0.5,
-        height: screenHeight * 0.3,
+        width: 250,
+        aspectRatio: 1.0,
         fit: BoxFit.contain,
+        overrideBoxFit: false,
         alignment: Alignment.center,
         frameRate: FrameRate.max,
         errorBuilder: (context, error, stackTrace) {

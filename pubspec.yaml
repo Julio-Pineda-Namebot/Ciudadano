@@ -43,7 +43,8 @@ dependencies:
   flutter_chat_ui: ^2.6.1
   flutter_chat_core: ^2.6.2
   flutter_chat_types: ^3.6.2
-
+  flutter_launcher_icons: ^0.14.4
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -83,4 +84,9 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 splash_master:
   color: "#000000"
-  image: "assets/splash.png"
+  image: "assets/splash_screen.json"
+flutter_launcher_icons:
+  android: true
+  image_path: "assets/logo.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/logo_foreground.png"
