@@ -1,9 +1,9 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:skeletonizer/skeletonizer.dart";
-import "package:ciudadano/features/profile/presentation/bloc/user_profile_bloc.dart";
-import "package:ciudadano/features/profile/presentation/bloc/user_profile_state.dart";
-import "package:ciudadano/features/profile/presentation/bloc/user_profile_event.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_state.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
 
 class UserForm extends StatefulWidget {
   const UserForm({super.key});

@@ -11,9 +11,9 @@ import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bl
 import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
-import "package:ciudadano/features/profile/data/profile_remote_datasource.dart";
-import "package:ciudadano/features/profile/presentation/bloc/user_profile_bloc.dart";
-import "package:ciudadano/features/profile/presentation/bloc/user_profile_event.dart";
+import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";

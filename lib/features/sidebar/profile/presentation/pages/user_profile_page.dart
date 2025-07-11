@@ -1,4 +1,4 @@
-import "package:ciudadano/features/profile/presentation/pages/form_profile.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/pages/form_profile.dart";
 import "package:flutter/material.dart";
 
 class UserProfilePage extends StatelessWidget {

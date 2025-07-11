@@ -1,5 +1,5 @@
 import "package:ciudadano/core/network/dio_cliente.dart";
-import "package:ciudadano/features/profile/data/models/user_profile_modal.dart";
+import "package:ciudadano/features/sidebar/profile/data/models/user_profile_modal.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:dio/dio.dart";
 

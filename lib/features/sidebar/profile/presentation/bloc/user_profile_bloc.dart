@@ -1,5 +1,5 @@
-import "package:ciudadano/features/profile/data/models/user_profile_modal.dart";
-import "package:ciudadano/features/profile/data/profile_remote_datasource.dart";
+import "package:ciudadano/features/sidebar/profile/data/models/user_profile_modal.dart";
+import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "user_profile_event.dart";
 import "user_profile_state.dart";

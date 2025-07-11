@@ -1,4 +1,4 @@
-import "package:ciudadano/features/profile/entities/user_profile.dart";
+import "package:ciudadano/features/sidebar/profile/entities/user_profile.dart";
 
 class UserProfileModel extends UserProfile {
   const UserProfileModel({

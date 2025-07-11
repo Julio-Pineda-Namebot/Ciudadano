@@ -27,7 +27,7 @@ import "package:ciudadano/features/incidents/domain/usecases/create_incident_use
 import "package:ciudadano/features/incidents/domain/usecases/get_nearby_incidents.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/create_incident/create_incident_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
-import "package:ciudadano/features/profile/presentation/bloc/user_profile_bloc.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/logout/data/logout_datasource.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";

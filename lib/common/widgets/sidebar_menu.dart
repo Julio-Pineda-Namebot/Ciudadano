@@ -1,5 +1,5 @@
 import "package:ciudadano/common/widgets/pages/about/about_page.dart";
-import "package:ciudadano/features/profile/presentation/pages/user_profile_page.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/pages/user_profile_page.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
