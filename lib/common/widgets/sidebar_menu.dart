@@ -1,4 +1,4 @@
-import "package:ciudadano/common/widgets/pages/about/about_page.dart";
+import "package:ciudadano/features/sidebar/about/about_page.dart";
 import "package:ciudadano/features/sidebar/news/presentation/page/news_page.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/pages/user_profile_page.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
