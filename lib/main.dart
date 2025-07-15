@@ -21,6 +21,7 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
+import "package:flutter_localizations/flutter_localizations.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -115,6 +116,16 @@ class MyApp extends StatelessWidget {
         title: "Ciudadano",
         debugShowCheckedModeBanner: false,
         theme: AppTheme.appTheme,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale("es"),
+          Locale("en"),
+        ],
+        locale: const Locale("es"),
         home: BlocBuilder<PresentationBloc, PresentationState>(
           builder: (context, state) {
             return AnimatedSwitcher(
