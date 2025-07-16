@@ -19,7 +19,10 @@ class _ComunidadPageState extends State<ComunidadPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Comunidad"),
+        title: const Text(
+          "Comunidad",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
       ),
