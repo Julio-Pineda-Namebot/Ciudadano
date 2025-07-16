@@ -21,11 +21,23 @@ import "package:ciudadano/features/geolocalization/data/repository/location_repo
 import "package:ciudadano/features/geolocalization/domain/repository/location_repository.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/home/comunity/data/datasource/activity_local_datasource.dart";
+import "package:ciudadano/features/home/comunity/data/datasource/cam_feed_local_datasource.dart";
+import "package:ciudadano/features/home/comunity/data/datasource/event_local_datasource.dart";
 import "package:ciudadano/features/home/comunity/data/repository/activity_repository_impl.dart";
+import "package:ciudadano/features/home/comunity/data/repository/cam_feed_repository_impl.dart";
+import "package:ciudadano/features/home/comunity/data/repository/event_repository_impl.dart";
 import "package:ciudadano/features/home/comunity/domain/repository/activity_repository.dart";
-import "package:ciudadano/features/home/comunity/domain/usecases/add_activity.dart";
-import "package:ciudadano/features/home/comunity/domain/usecases/get_activity.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_bloc.dart";
+import "package:ciudadano/features/home/comunity/domain/repository/cam_feed_repository.dart";
+import "package:ciudadano/features/home/comunity/domain/repository/event_repository.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/activity/add_activity.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/activity/get_activity.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/event/add_event.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/event/get_event.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/event/toggle_join_event.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/surveillance/get_cam_feeds.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
 import "package:ciudadano/features/incidents/data/repository/incident_repository_impl.dart";
 import "package:ciudadano/features/incidents/data/source/incident_api_service.dart";
 import "package:ciudadano/features/incidents/domain/repository/incident_repository.dart";
@@ -108,4 +120,28 @@ void setUpServiceLocator() {
   sl.registerFactory<ActividadBloc>(
     () => ActividadBloc(getActividades: sl(), addActividad: sl()),
   );
+
+  // Event - Comunity
+  sl.registerLazySingleton<EventoLocalDatasource>(
+    () => EventoLocalDatasourceImpl(),
+  );
+  sl.registerLazySingleton<EventoRepository>(
+    () => EventoRepositoryImpl(datasource: sl()),
+  );
+  sl.registerLazySingleton<GetEventos>(() => GetEventos(sl()));
+  sl.registerLazySingleton<AddEvento>(() => AddEvento(sl()));
+  sl.registerLazySingleton<ToggleJoinEvento>(() => ToggleJoinEvento(sl()));
+  sl.registerFactory<EventoBloc>(
+    () => EventoBloc(getEventos: sl(), addEvento: sl(), toggleJoin: sl()),
+  );
+
+  // surveillance - Comunity
+  sl.registerLazySingleton<CamFeedLocalDatasource>(
+    () => CamFeedLocalDatasourceImpl(),
+  );
+  sl.registerLazySingleton<CamFeedRepository>(
+    () => CamFeedRepositoryImpl(datasource: sl()),
+  );
+  sl.registerLazySingleton<GetCamFeeds>(() => GetCamFeeds(sl()));
+  sl.registerFactory<CamBloc>(() => CamBloc(getFeeds: sl()));
 }

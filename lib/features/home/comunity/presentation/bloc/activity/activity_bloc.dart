@@ -1,8 +1,8 @@
 import "package:ciudadano/features/home/comunity/domain/entities/activity.dart";
-import "package:ciudadano/features/home/comunity/domain/usecases/add_activity.dart";
-import "package:ciudadano/features/home/comunity/domain/usecases/get_activity.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_event.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_state.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/activity/add_activity.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/activity/get_activity.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_state.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 
 class ActividadBloc extends Bloc<ActividadEvent, ActividadState> {

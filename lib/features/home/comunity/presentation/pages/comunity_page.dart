@@ -1,4 +1,6 @@
 import "package:ciudadano/features/home/comunity/presentation/pages/activity_page.dart";
+import "package:ciudadano/features/home/comunity/presentation/pages/event_section.dart";
+import "package:ciudadano/features/home/comunity/presentation/pages/surveillance_page.dart";
 import "package:flutter/material.dart";
 
 class ComunidadPage extends StatefulWidget {
@@ -9,7 +11,7 @@ class ComunidadPage extends StatefulWidget {
 }
 
 class _ComunidadPageState extends State<ComunidadPage> {
-  int _current = 0; // 0 = Actividad, 1 = Eventos, 2 = Vigilancia
+  int _current = 0;
 
   void _select(int index) => setState(() => _current = index);
 
@@ -57,14 +59,11 @@ class _ComunidadPageState extends State<ComunidadPage> {
             child: IndexedStack(
               index: _current,
               children: const [
-                // Si tu ActividadPage lleva Scaffold, crea una versión sin él.
                 ActividadPage(),
 
-                // Placeholder de Eventos (drawer/formulario se hará luego)
-                Center(child: Text("Eventos (próximamente)…")),
+                EventosSection(),
 
-                // Placeholder de Vigilancia (cards con GIFs se hará luego)
-                Center(child: Text("Vigilancia (próximamente)…")),
+                VigilanciaSection(),
               ],
             ),
           ),
@@ -74,7 +73,6 @@ class _ComunidadPageState extends State<ComunidadPage> {
   }
 }
 
-/// Botón “tarjeta” con icono + label, similar al de la maqueta.
 class _TabButton extends StatelessWidget {
   final bool selected;
   final IconData icon;

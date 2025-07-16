@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "nombre": "Reunión de vecinos – Parque Central",
+    "fecha": "2025-08-01T19:00:00",
+    "joined": false
+  },
+  {
+    "id": 2,
+    "nombre": "Limpieza comunitaria de avenidas",
+    "fecha": "2025-08-10T08:30:00",
+    "joined": true
+  }
+]

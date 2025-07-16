@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "titulo": "Cámara – Patio interior",
+    "gif": "assets/gifs/gif1.gif"
+  },
+  {
+    "id": 2,
+    "titulo": "Cámara – Fuera del domicilio",
+    "gif": "assets/gifs/gif2.gif"
+  },
+  {
+    "id": 3,
+    "titulo": "Cámara – Garaje",
+    "gif": "assets/gifs/gif3.jpg"
+  }
+]

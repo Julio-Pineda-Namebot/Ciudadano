@@ -1,5 +1,5 @@
-import "package:ciudadano/features/home/comunity/presentation/widgets/activity_list_widget.dart";
-import "package:ciudadano/features/home/comunity/presentation/widgets/activity_input_widget.dart";
+import "package:ciudadano/features/home/comunity/presentation/widgets/activity/activity_list_widget.dart";
+import "package:ciudadano/features/home/comunity/presentation/widgets/activity/activity_input_widget.dart";
 import "package:flutter/material.dart";
 
 class ActividadPage extends StatelessWidget {

@@ -1,5 +1,5 @@
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_bloc.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 

@@ -10,8 +10,12 @@ import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_
 import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
 import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_bloc.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_event.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
@@ -116,6 +120,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (_) => sl<ActividadBloc>()..add(CargarActividades()),
         ),
+        BlocProvider(create: (_) => sl<EventoBloc>()..add(CargarEventos())),
+        BlocProvider(create: (_) => sl<CamBloc>()..add(CargarCamaras())),
       ],
       child: MaterialApp(
         title: "Ciudadano",
