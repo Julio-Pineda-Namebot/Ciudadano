@@ -1,4 +1,4 @@
-import "package:ciudadano/features/home/comunity/presentation/pages/actividad_page.dart";
+import "package:ciudadano/features/home/comunity/presentation/pages/activity_page.dart";
 import "package:flutter/material.dart";
 
 class ComunidadPage extends StatefulWidget {
