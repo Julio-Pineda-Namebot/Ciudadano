@@ -1,6 +1,6 @@
 import "package:ciudadano/features/home/emergency/presentation/pages/centro_ayuda/help_centers_page.dart";
 import "package:ciudadano/features/home/emergency/presentation/pages/numeros_emergencia/number_emergency_page.dart";
-import "package:ciudadano/features/home/emergency/presentation/pages/protocol/protocolo_page.dart";
+import "package:ciudadano/features/home/emergency/presentation/pages/protocol/protocol_page.dart";
 import "package:flutter/material.dart";
 
 class EmergenciaPage extends StatelessWidget {
