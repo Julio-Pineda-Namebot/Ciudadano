@@ -1,5 +1,6 @@
 import "package:ciudadano/features/emergency/presentation/pages/centro_ayuda/help_centers_page.dart";
 import "package:ciudadano/features/emergency/presentation/pages/numeros_emergencia/number_emergency_page.dart";
+import "package:ciudadano/features/emergency/presentation/pages/protocol/protocolo_page.dart";
 import "package:flutter/material.dart";
 
 class EmergenciaPage extends StatelessWidget {
@@ -49,7 +50,10 @@ class EmergenciaPage extends StatelessWidget {
               icon: Icons.warning_amber_rounded,
               label: "Protocolo de Emergencia",
               onTap: () {
-                // Más adelante: abrir ProtocoloPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ProtocoloPage()),
+                );
               },
             ),
           ],

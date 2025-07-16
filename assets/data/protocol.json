@@ -1,0 +1,22 @@
+[
+  {
+    "titulo": "En caso de Incendio",
+    "descripcion": "Salga del edificio de inmediato. No use ascensores. Llame al 116 y espere instrucciones."
+  },
+  {
+    "titulo": "En caso de Terremoto",
+    "descripcion": "Protéjase bajo una mesa resistente. Aléjese de ventanas. Evacúe solo si es seguro."
+  },
+  {
+    "titulo": "En caso de Robo",
+    "descripcion": "Mantenga la calma. No enfrente al agresor. Llame al 105 lo antes posible."
+  },
+  {
+    "titulo": "En caso de Inundación",
+    "descripcion": "Diríjase a zonas altas. Evite cruzar ríos o zonas con corriente. Desconecte electricidad si es seguro hacerlo."
+  },
+  {
+    "titulo": "En caso de Corte de Energía",
+    "descripcion": "Use linternas en lugar de velas. Mantenga refrigeradores cerrados. Desconecte equipos electrónicos sensibles."
+  }
+]
