@@ -1,0 +1,22 @@
+[
+  {
+    "nombre": "Policía Nacional",
+    "numero": "105",
+    "icono": "local_police"
+  },
+  {
+    "nombre": "Bomberos",
+    "numero": "116",
+    "icono": "local_fire_department"
+  },
+  {
+    "nombre": "Cruz Roja",
+    "numero": "115",
+    "icono": "local_hospital"
+  },
+  {
+    "nombre": "Defensa Civil",
+    "numero": "119",
+    "icono": "shield"
+  }
+]
