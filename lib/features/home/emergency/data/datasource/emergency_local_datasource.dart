@@ -1,5 +1,5 @@
 import "dart:convert";
-import "package:ciudadano/features/emergency/data/models/contact_model.dart";
+import "package:ciudadano/features/home/emergency/data/models/contact_model.dart";
 import "package:flutter/services.dart";
 
 abstract class EmergenciaLocalDatasource {

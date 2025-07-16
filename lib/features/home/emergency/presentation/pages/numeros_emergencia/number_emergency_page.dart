@@ -1,5 +1,5 @@
-import "package:ciudadano/features/emergency/data/datasource/emergency_local_datasource.dart";
-import "package:ciudadano/features/emergency/data/models/contact_model.dart";
+import "package:ciudadano/features/home/emergency/data/datasource/emergency_local_datasource.dart";
+import "package:ciudadano/features/home/emergency/data/models/contact_model.dart";
 import "package:flutter/material.dart";
 import "package:url_launcher/url_launcher.dart";
 

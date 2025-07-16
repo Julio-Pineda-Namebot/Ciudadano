@@ -1,6 +1,6 @@
 import "dart:convert";
 import "package:flutter/services.dart";
-import "package:ciudadano/features/emergency/data/models/help_centers_model.dart";
+import "package:ciudadano/features/home/emergency/data/models/help_centers_model.dart";
 
 abstract class CentrosLocalDatasource {
   Future<List<CentroModel>> cargarCentros();

@@ -1,6 +1,6 @@
-import "package:ciudadano/features/emergency/data/datasource/center_local_datasource.dart";
-import "package:ciudadano/features/emergency/data/models/help_centers_model.dart";
-import "package:ciudadano/features/emergency/presentation/widgets/ver_mapa_page.dart";
+import "package:ciudadano/features/home/emergency/data/datasource/center_local_datasource.dart";
+import "package:ciudadano/features/home/emergency/data/models/help_centers_model.dart";
+import "package:ciudadano/features/home/emergency/presentation/widgets/ver_mapa_page.dart";
 import "package:flutter/material.dart";
 
 class CentrosAyudaPage extends StatelessWidget {
