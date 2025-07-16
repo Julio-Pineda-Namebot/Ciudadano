@@ -1,0 +1,51 @@
+[
+  {
+    "nombre": "Hospital Regional de Ica",
+    "tipo": "Hospital",
+    "direccion": "Av. San Martín, Ica",
+    "lat": -14.0681,
+    "lng": -75.7286
+  },
+  {
+    "nombre": "Estación de Bomberos de Ica",
+    "tipo": "Bomberos",
+    "direccion": "Av. Cutervo 450, Ica",
+    "lat": -14.0675,
+    "lng": -75.7305
+  },
+  {
+    "nombre": "Comisaría de Ica",
+    "tipo": "Comisaría",
+    "direccion": "Jr. Lambayeque 150, Ica",
+    "lat": -14.0688,
+    "lng": -75.7300
+  },
+  {
+    "nombre": "Estación de Policía de La Tinguiña",
+    "tipo": "Comisaría",
+    "direccion": "Av. Principal, La Tinguiña",
+    "lat": -14.0469,
+    "lng": -75.7362
+  },
+  {
+    "nombre": "Hospital Santa María del Socorro",
+    "tipo": "Hospital",
+    "direccion": "Av. Grau 210, Ica",
+    "lat": -14.0702,
+    "lng": -75.7293
+  },
+  {
+    "nombre": "Estación de Bomberos de Nazca",
+    "tipo": "Bomberos",
+    "direccion": "Av. Los Incas, Nazca",
+    "lat": -14.8283,
+    "lng": -74.9376
+  },
+  {
+    "nombre": "Comisaría de Nazca",
+    "tipo": "Comisaría",
+    "direccion": "Jr. Lima 270, Nazca",
+    "lat": -14.8291,
+    "lng": -74.9382
+  }
+]
