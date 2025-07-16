@@ -68,7 +68,9 @@ class HomePage extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const EmergenciaPage()),
+                          MaterialPageRoute(
+                            builder: (_) => const EmergenciaPage(),
+                          ),
                         );
                       },
                       child: Container(
@@ -129,21 +131,35 @@ class HomePage extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: const Column(
+                        child: Column(
                           children: [
-                            Icon(Icons.groups, size: 30),
-                            SizedBox(height: 8),
-                            Text(
+                            const Icon(Icons.groups, size: 30),
+                            const SizedBox(height: 8),
+                            const Text(
                               "Comunidad",
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            SizedBox(height: 4),
-                            Text(
-                              "12 Activos",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: 12,
-                              ),
+                            const SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.green,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Text(
+                                  "Activos",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
