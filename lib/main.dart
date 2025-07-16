@@ -10,6 +10,12 @@ import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_
 import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
 import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_event.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_event.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
@@ -21,6 +27,7 @@ import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
+import "package:flutter_localizations/flutter_localizations.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -110,11 +117,23 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => sl<UserProfileBloc>()..add(FetchProfile()),
         ),
+        BlocProvider(
+          create: (_) => sl<ActividadBloc>()..add(CargarActividades()),
+        ),
+        BlocProvider(create: (_) => sl<EventoBloc>()..add(CargarEventos())),
+        BlocProvider(create: (_) => sl<CamBloc>()..add(CargarCamaras())),
       ],
       child: MaterialApp(
         title: "Ciudadano",
         debugShowCheckedModeBanner: false,
         theme: AppTheme.appTheme,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale("es"), Locale("en")],
+        locale: const Locale("es"),
         home: BlocBuilder<PresentationBloc, PresentationState>(
           builder: (context, state) {
             return AnimatedSwitcher(
