@@ -1,3 +1,4 @@
+import "package:ciudadano/features/home/comunity/presentation/pages/comunidad_page.dart";
 import "package:ciudadano/features/home/emergency/presentation/pages/emergency_page.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/nearby_incidents_map.dart";
 import "package:flutter/material.dart";
@@ -115,7 +116,12 @@ class HomePage extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        // Acción para ir a la pantalla de Comunidad
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ComunidadPage(),
+                          ),
+                        );
                       },
                       child: Container(
                         padding: const EdgeInsets.all(16),

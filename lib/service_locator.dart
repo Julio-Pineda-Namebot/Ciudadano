@@ -20,6 +20,12 @@ import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/data/repository/location_repository_impl.dart";
 import "package:ciudadano/features/geolocalization/domain/repository/location_repository.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
+import "package:ciudadano/features/home/comunity/data/datasource/activity_local_datasource.dart";
+import "package:ciudadano/features/home/comunity/data/repository/activity_repository_impl.dart";
+import "package:ciudadano/features/home/comunity/domain/repository/activity_repository.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/add_activity.dart";
+import "package:ciudadano/features/home/comunity/domain/usecases/get_activity.dart";
+import "package:ciudadano/features/home/comunity/presentation/bloc/activity_bloc.dart";
 import "package:ciudadano/features/incidents/data/repository/incident_repository_impl.dart";
 import "package:ciudadano/features/incidents/data/source/incident_api_service.dart";
 import "package:ciudadano/features/incidents/domain/repository/incident_repository.dart";
@@ -86,4 +92,20 @@ void setUpServiceLocator() {
   // Logout
   sl.registerSingleton<LogoutDatasource>(LogoutDatasource(sl()));
   sl.registerFactory(() => LogoutBloc(sl()));
+
+  // Activity - Comunity
+  sl.registerLazySingleton<ActividadLocalDatasource>(
+    () => ActividadLocalDatasourceImpl(),
+  );
+
+  sl.registerLazySingleton<ActividadRepository>(
+    () => ActividadRepositoryImpl(datasource: sl()),
+  );
+
+  sl.registerLazySingleton<GetActividades>(() => GetActividades(sl()));
+  sl.registerLazySingleton<AddActividad>(() => AddActividad(sl()));
+
+  sl.registerFactory<ActividadBloc>(
+    () => ActividadBloc(getActividades: sl(), addActividad: sl()),
+  );
 }
