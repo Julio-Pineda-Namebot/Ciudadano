@@ -49,7 +49,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   url_launcher: ^6.3.2
-
+  flutter_map_location_marker: ^10.1.0
+  flutter_map_compass: ^1.1.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

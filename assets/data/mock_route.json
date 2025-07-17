@@ -1,0 +1,5 @@
+[
+  { "instruction": "Gira a la izquierda", "lat": -12.0453, "lng": -77.0311 },
+  { "instruction": "Continúa recto por 200m", "lat": -12.0450, "lng": -77.0300 },
+  { "instruction": "Gira a la derecha", "lat": -12.0440, "lng": -77.0290 }
+]

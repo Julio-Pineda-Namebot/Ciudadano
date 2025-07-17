@@ -2,6 +2,7 @@ import "package:ciudadano/features/sidebar/about/about_page.dart";
 import "package:ciudadano/features/sidebar/news/presentation/page/news_page.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/pages/user_profile_page.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
+import "package:ciudadano/features/sidebar/safe_route/presentation/pages/safe_route_page.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:sidebarx/sidebarx.dart";
@@ -26,16 +27,25 @@ class SidebarMenu extends StatelessWidget {
             ).then((_) => controller.selectIndex(-1));
           },
         ),
-        SidebarXItem(icon: Icons.newspaper, label: "Noticias", onTap: () {
-          Navigator.push(
-            context, 
-            MaterialPageRoute(builder: (context) => const NewsPage())
-          ).then((_) => controller.selectIndex(-1));
-        }),
+        SidebarXItem(
+          icon: Icons.newspaper,
+          label: "Noticias",
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NewsPage()),
+            ).then((_) => controller.selectIndex(-1));
+          },
+        ),
         SidebarXItem(
           icon: Icons.alt_route,
           label: "Recorrido Seguro",
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SafeRoutePage()),
+            ).then((_) => controller.selectIndex(-1));
+          },
         ),
         SidebarXItem(
           icon: Icons.info,
@@ -95,10 +105,14 @@ class SidebarMenu extends StatelessWidget {
         selectedItemTextPadding: const EdgeInsets.only(left: 20),
       ),
       footerItems: [
-        SidebarXItem(icon: Icons.logout, label: "Cerrar Sesión", onTap: () {
-          controller.selectIndex(-1);
-          context.read<LogoutBloc>().add(LogoutPressed());
-        }),
+        SidebarXItem(
+          icon: Icons.logout,
+          label: "Cerrar Sesión",
+          onTap: () {
+            controller.selectIndex(-1);
+            context.read<LogoutBloc>().add(LogoutPressed());
+          },
+        ),
       ],
       extendedTheme: const SidebarXTheme(width: 250),
     );

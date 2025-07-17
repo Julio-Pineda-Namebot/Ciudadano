@@ -21,6 +21,7 @@ import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasourc
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
+import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
@@ -122,6 +123,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => sl<EventoBloc>()..add(CargarEventos())),
         BlocProvider(create: (_) => sl<CamBloc>()..add(CargarCamaras())),
+        BlocProvider(create: (_) => sl<RouteBloc>()),
       ],
       child: MaterialApp(
         title: "Ciudadano",

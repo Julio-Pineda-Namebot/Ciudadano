@@ -1,7 +1,9 @@
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/incident_marker.dart";
-import "package:ciudadano/features/incidents/presentation/widgets/your_location_marker.dart";
+// import "package:ciudadano/features/incidents/presentation/widgets/your_location_marker.dart";
+import "package:flutter_map_location_marker/flutter_map_location_marker.dart";
+import "package:flutter_map_compass/flutter_map_compass.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:flutter_hooks_bloc/flutter_hooks_bloc.dart";
@@ -53,14 +55,23 @@ class NearbyIncidentsMap extends HookWidget {
                 urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 userAgentPackageName: "com.ciudadano.app",
               ),
+              const MapCompass.cupertino(),
+              const CurrentLocationLayer(
+                alignPositionOnUpdate: AlignOnUpdate.always,
+                alignDirectionOnUpdate: AlignOnUpdate.never,
+                style: LocationMarkerStyle(
+                  markerSize: Size(20, 20),
+                  markerDirection: MarkerDirection.heading,
+                ),
+              ),
               MarkerLayer(
                 markers: [
-                  Marker(
-                    point: actualLocation,
-                    width: 80,
-                    height: 80,
-                    child: const YourLocationMarker(),
-                  ),
+                  // Marker(
+                  //   point: actualLocation,
+                  //   width: 80,
+                  //   height: 80,
+                  //   child: const YourLocationMarker(),
+                  // ),
                   if (nearbyIncidentsState is NearbyIncidentsLoaded)
                     ...nearbyIncidentsState.incidents.map(
                       (incident) => Marker(
