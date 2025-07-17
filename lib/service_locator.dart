@@ -48,6 +48,11 @@ import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/logout/data/logout_datasource.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
+import "package:ciudadano/features/sidebar/safe_route/data/datasources/route_remote_datasource.dart";
+import "package:ciudadano/features/sidebar/safe_route/data/repository/route_repository_impl.dart";
+import "package:ciudadano/features/sidebar/safe_route/domain/repository/route_repository.dart";
+import "package:ciudadano/features/sidebar/safe_route/domain/usecases/get_route_usecase.dart";
+import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:get_it/get_it.dart";
 
@@ -144,4 +149,10 @@ void setUpServiceLocator() {
   );
   sl.registerLazySingleton<GetCamFeeds>(() => GetCamFeeds(sl()));
   sl.registerFactory<CamBloc>(() => CamBloc(getFeeds: sl()));
+
+  // safe-route - Sidebar
+  sl.registerFactory(() => RouteBloc(GetRouteUseCase(sl())));
+  sl.registerLazySingleton(() => GetRouteUseCase(sl()));
+  sl.registerLazySingleton<RouteRepository>(() => RouteRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => RouteRemoteDatasource());
 }
