@@ -32,12 +32,13 @@ import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
+import "firebase_options.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicializar Firebase
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   SplashMaster.initialize();
   setUpServiceLocator();
