@@ -51,7 +51,11 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_map_location_marker: ^10.1.0
   flutter_map_compass: ^1.1.1
-  
+  # Firebase dependencies para notificaciones push
+  firebase_core: ^3.8.0
+  firebase_messaging: ^15.1.6
+  flutter_local_notifications: ^18.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

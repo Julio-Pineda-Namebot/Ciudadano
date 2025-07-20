@@ -17,12 +17,15 @@ import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_e
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_event.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_event.dart";
 import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
 import "package:ciudadano/service_locator.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
@@ -32,6 +35,10 @@ import "package:flutter_localizations/flutter_localizations.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase
+  await Firebase.initializeApp();
+
   SplashMaster.initialize();
   setUpServiceLocator();
   runApp(
@@ -124,6 +131,9 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<EventoBloc>()..add(CargarEventos())),
         BlocProvider(create: (_) => sl<CamBloc>()..add(CargarCamaras())),
         BlocProvider(create: (_) => sl<RouteBloc>()),
+        BlocProvider(
+          create: (_) => sl<NotificationBloc>()..add(InitializeNotifications()),
+        ),
       ],
       child: MaterialApp(
         title: "Ciudadano",
