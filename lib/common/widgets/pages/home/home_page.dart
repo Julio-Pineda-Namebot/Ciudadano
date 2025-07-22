@@ -1,6 +1,7 @@
 import "package:ciudadano/features/home/comunity/presentation/pages/comunity_page.dart";
 import "package:ciudadano/features/home/emergency/presentation/pages/emergency_page.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/nearby_incidents_map.dart";
+import "package:ciudadano/features/alerts/presentation/widgets/emergency_button.dart";
 import "package:flutter/material.dart";
 
 class HomePage extends StatelessWidget {
@@ -17,44 +18,11 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 16),
 
             // Botón de Emergencia
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  // Acción al tocar el botón de emergencia
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.shield, color: Colors.white),
-                      SizedBox(width: 8),
-                      Text(
-                        "Botón de Emergencia",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: EmergencyButton(),
             ),
 
-            const SizedBox(height: 8),
-            const Text(
-              "Toca rápidamente 3 veces para activar",
-              style: TextStyle(color: Colors.black54),
-            ),
             const SizedBox(height: 16),
 
             // Emergencia y Comunidad

@@ -1,4 +1,9 @@
 import "package:ciudadano/core/network/dio_cliente.dart";
+import "package:ciudadano/features/alerts/data/repository/alert_repository_impl.dart";
+import "package:ciudadano/features/alerts/data/source/alert_remote_data_source.dart";
+import "package:ciudadano/features/alerts/domain/repository/alert_repository.dart";
+import "package:ciudadano/features/alerts/domain/usecases/create_alert_use_case.dart";
+import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/chats/data/repository/chat_repository_impl.dart";
 import "package:ciudadano/features/chats/data/source/chat_api_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_local_source.dart";
@@ -79,6 +84,7 @@ void setUpServiceLocator() {
   sl.registerSingleton<ChatApiSource>(ChatApiSource());
   sl.registerSingleton<NotificationLocalSource>(NotificationLocalSourceImpl());
   sl.registerSingleton<NotificationApiSource>(NotificationApiSourceImpl());
+  sl.registerSingleton<AlertRemoteDataSource>(AlertRemoteDataSourceImpl());
 
   //Repositories
   sl.registerSingleton<LocationRepository>(LocationRepositoryImpl());
@@ -96,6 +102,9 @@ void setUpServiceLocator() {
       localSource: sl<NotificationLocalSource>(),
       apiSource: sl<NotificationApiSource>(),
     ),
+  );
+  sl.registerSingleton<AlertRepository>(
+    AlertRepositoryImpl(remoteDataSource: sl<AlertRemoteDataSource>()),
   );
 
   // Use Cases
@@ -116,6 +125,7 @@ void setUpServiceLocator() {
   sl.registerSingleton(
     ListenToNotificationsUseCase(sl<NotificationRepository>()),
   );
+  sl.registerSingleton(CreateAlertUseCase(sl<AlertRepository>()));
 
   // Cubits and Blocs
   sl.registerLazySingleton(() => LocationCubit(sl<LocationRepository>()));
@@ -141,6 +151,9 @@ void setUpServiceLocator() {
       listenToNotificationsUseCase: sl<ListenToNotificationsUseCase>(),
       notificationRepository: sl<NotificationRepository>(),
     ),
+  );
+  sl.registerFactory(
+    () => AlertBloc(createAlertUseCase: sl<CreateAlertUseCase>()),
   );
 
   // Logout

@@ -20,6 +20,7 @@ import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/
 import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
 import "package:ciudadano/features/notifications/presentation/bloc/notification_event.dart";
 import "package:ciudadano/features/notifications/presentation/bloc/notification_state.dart";
+import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
@@ -174,6 +175,7 @@ class MyApp extends StatelessWidget {
             return bloc;
           },
         ),
+        BlocProvider(create: (_) => sl<AlertBloc>()),
       ],
       child: BlocListener<NotificationBloc, NotificationState>(
         listener: (context, state) {
