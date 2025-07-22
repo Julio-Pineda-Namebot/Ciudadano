@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "123456789000",
-    "project_id": "ciudadano-temp",
-    "storage_bucket": "ciudadano-temp.appspot.com"
+    "project_number": "347968579122",
+    "project_id": "ciudadano-83f6c",
+    "storage_bucket": "ciudadano-83f6c.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789000:android:abcdef123456789",
+        "mobilesdk_app_id": "1:347968579122:android:dbacf63307fa2d40b2fe2b",
         "android_client_info": {
           "package_name": "com.example.ciudadano"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "123456789000-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDummyKeyForTemporaryUse123456789"
+          "current_key": "AIzaSyAWtbSuJNjpzk3JXnKUF4Bt15wJjDVqzqo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "123456789000-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

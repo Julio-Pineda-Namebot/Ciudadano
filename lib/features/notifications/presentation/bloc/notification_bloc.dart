@@ -117,14 +117,26 @@ class NotificationBloc
     RegisterPushToken event,
     Emitter<state.NotificationState> emit,
   ) async {
+    print(
+      "🚀 Registrando token: ${event.token.substring(0, 20)}... en plataforma: ${event.platform}",
+    );
+
     final result = await registerPushTokenUseCase(event.token, event.platform);
-    result.fold((error) => emit(state.NotificationError(error)), (success) {
-      if (success) {
-        emit(state.NotificationTokenRegistered(event.token));
-      } else {
-        emit(const state.NotificationError("Failed to register token"));
-      }
-    });
+    result.fold(
+      (error) {
+        print("❌ Error registrando token: $error");
+        emit(state.NotificationError(error));
+      },
+      (success) {
+        if (success) {
+          print("✅ Token registrado exitosamente con el backend");
+          emit(state.NotificationTokenRegistered(event.token));
+        } else {
+          print("❌ Falló el registro del token");
+          emit(const state.NotificationError("Failed to register token"));
+        }
+      },
+    );
   }
 
   Future<void> _onUnregisterPushToken(
@@ -232,24 +244,39 @@ class NotificationBloc
   /// Método para registrar automáticamente el token después del login
   Future<void> autoRegisterToken() async {
     try {
+      print("🔥 autoRegisterToken: Iniciando registro automático de token");
+
       final permissionsGranted =
           await notificationRepository.areNotificationsEnabled();
 
+      print("🔥 autoRegisterToken: Permisos habilitados: $permissionsGranted");
+
       if (!permissionsGranted) {
+        print("🔥 autoRegisterToken: Permisos no concedidos, solicitando...");
         // Solicitar permisos si no están concedidos
         add(RequestNotificationPermissions());
         return;
       }
 
+      print("🔥 autoRegisterToken: Obteniendo token de Firebase...");
       final tokenResult = await notificationRepository.getFirebaseToken();
-      tokenResult.fold((error) => print("Error getting token: $error"), (
-        token,
-      ) {
-        final platform = Platform.isAndroid ? "android" : "ios";
-        add(RegisterPushToken(token: token, platform: platform));
-      });
+      tokenResult.fold(
+        (error) {
+          print("🔥 autoRegisterToken: Error obteniendo token: $error");
+        },
+        (token) {
+          print(
+            "🔥 autoRegisterToken: Token obtenido: ${token.substring(0, 20)}...",
+          );
+          final platform = Platform.isAndroid ? "android" : "ios";
+          print(
+            "🔥 autoRegisterToken: Registrando token con plataforma: $platform",
+          );
+          add(RegisterPushToken(token: token, platform: platform));
+        },
+      );
     } catch (e) {
-      print("Error auto-registering token: $e");
+      print("🔥 autoRegisterToken: Error auto-registering token: $e");
     }
   }
 
