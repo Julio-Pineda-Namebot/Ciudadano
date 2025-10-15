@@ -4,6 +4,8 @@ import "package:flutter_login/flutter_login.dart";
 import "package:ciudadano/features/auth/data/auth_remote_datasource.dart";
 // import 'package:ciudadano/features/auth/presentation/helper/biometric_auth_helper.dart';
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -196,6 +198,14 @@ class LoginPageState extends State<LoginPage> {
         ),
       ],
       onSubmitAnimationCompleted: () {
+        // Registrar token después del login exitoso
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          print("Login exitoso - registrando token con backend");
+          if (context.mounted) {
+            context.read<NotificationBloc>().autoRegisterToken();
+          }
+        });
+
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const MainLayout()),
         );

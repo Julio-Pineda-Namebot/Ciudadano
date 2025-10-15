@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "347968579122",
+    "project_id": "ciudadano-83f6c",
+    "storage_bucket": "ciudadano-83f6c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347968579122:android:dbacf63307fa2d40b2fe2b",
+        "android_client_info": {
+          "package_name": "com.example.ciudadano"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWtbSuJNjpzk3JXnKUF4Bt15wJjDVqzqo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -17,21 +17,51 @@ import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_e
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_event.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_event.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_state.dart";
+import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
 import "package:ciudadano/service_locator.dart";
+import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
+import "firebase_options.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Inicializar Firebase de forma más robusta
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } else {
+      // Si ya existe una app, la usamos
+      Firebase.app();
+    }
+  } on FirebaseException catch (e) {
+    if (e.code == "duplicate-app") {
+      // Firebase ya está inicializado desde otra fuente (native)
+      print("Firebase ya está inicializado desde configuración nativa");
+    } else {
+      print("Error inicializando Firebase: ${e.message}");
+      rethrow;
+    }
+  } catch (e) {
+    print("Error inesperado inicializando Firebase: $e");
+    rethrow;
+  }
+
   SplashMaster.initialize();
   setUpServiceLocator();
   runApp(
@@ -88,6 +118,16 @@ class MyApp extends StatelessWidget {
     }
   }
 
+  Widget _buildMainLayoutWithTokenRegistration(BuildContext context) {
+    // Registrar el token automáticamente cuando el usuario está logueado
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      print("Usuario logueado - registrando token con backend");
+      context.read<NotificationBloc>().autoRegisterToken();
+    });
+
+    return const MainLayout();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -124,46 +164,89 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<EventoBloc>()..add(CargarEventos())),
         BlocProvider(create: (_) => sl<CamBloc>()..add(CargarCamaras())),
         BlocProvider(create: (_) => sl<RouteBloc>()),
-      ],
-      child: MaterialApp(
-        title: "Ciudadano",
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.appTheme,
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [Locale("es"), Locale("en")],
-        locale: const Locale("es"),
-        home: BlocBuilder<PresentationBloc, PresentationState>(
-          builder: (context, state) {
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
-              child:
-                  state is PresentationNotSeen
-                      ? const PresentationScreenPage()
-                      : FutureBuilder(
-                        future: _isLoggedIn(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (snapshot.hasError) {
-                            return const LoginPage();
-                          }
-
-                          return snapshot.data!
-                              ? const MainLayout()
-                              : const LoginPage();
-                        },
-                      ),
-            );
+        BlocProvider(
+          create: (_) {
+            final bloc = sl<NotificationBloc>();
+            // Agregar un pequeño delay para asegurar que Firebase esté completamente inicializado
+            Future.delayed(const Duration(milliseconds: 500), () {
+              print("Disparando InitializeNotifications event");
+              bloc.add(InitializeNotifications());
+            });
+            return bloc;
           },
+        ),
+        BlocProvider(create: (_) => sl<AlertBloc>()),
+      ],
+      child: BlocListener<NotificationBloc, NotificationState>(
+        listener: (context, state) {
+          print("NotificationBloc state changed: ${state.runtimeType}");
+          if (state is NotificationInitial) {
+            print("Notificación inicial");
+          } else if (state is NotificationLoading) {
+            print("Notificaciones cargando...");
+          } else if (state is NotificationInitialized) {
+            print("Notificaciones inicializadas exitosamente");
+            print("Permisos: ${state.permissionsGranted}");
+            print("Token: ${state.firebaseToken}");
+
+            // Si no hay permisos, solicitarlos automáticamente
+            if (!state.permissionsGranted) {
+              print("Solicitando permisos de notificación...");
+              context.read<NotificationBloc>().add(
+                RequestNotificationPermissions(),
+              );
+            }
+          } else if (state is NotificationError) {
+            print("Error en notificaciones: ${state.message}");
+          } else if (state is NotificationPermissionGranted) {
+            print("Permisos de notificación concedidos!");
+          } else if (state is NotificationPermissionDenied) {
+            print("Permisos de notificación denegados");
+          } else if (state is NotificationTokenRegistered) {
+            print("🎉 Token registrado exitosamente con el backend!");
+            print("Token: ${state.token.substring(0, 20)}...");
+          }
+        },
+        child: MaterialApp(
+          title: "Ciudadano",
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.appTheme,
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale("es"), Locale("en")],
+          locale: const Locale("es"),
+          home: BlocBuilder<PresentationBloc, PresentationState>(
+            builder: (context, state) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child:
+                    state is PresentationNotSeen
+                        ? const PresentationScreenPage()
+                        : FutureBuilder(
+                          future: _isLoggedIn(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            if (snapshot.hasError) {
+                              return const LoginPage();
+                            }
+
+                            return snapshot.data!
+                                ? _buildMainLayoutWithTokenRegistration(context)
+                                : const LoginPage();
+                          },
+                        ),
+              );
+            },
+          ),
         ),
       ),
     );

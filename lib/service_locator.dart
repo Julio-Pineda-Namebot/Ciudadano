@@ -1,4 +1,9 @@
 import "package:ciudadano/core/network/dio_cliente.dart";
+import "package:ciudadano/features/alerts/data/repository/alert_repository_impl.dart";
+import "package:ciudadano/features/alerts/data/source/alert_remote_data_source.dart";
+import "package:ciudadano/features/alerts/domain/repository/alert_repository.dart";
+import "package:ciudadano/features/alerts/domain/usecases/create_alert_use_case.dart";
+import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/chats/data/repository/chat_repository_impl.dart";
 import "package:ciudadano/features/chats/data/source/chat_api_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_local_source.dart";
@@ -45,6 +50,15 @@ import "package:ciudadano/features/incidents/domain/usecases/create_incident_use
 import "package:ciudadano/features/incidents/domain/usecases/get_nearby_incidents.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/create_incident/create_incident_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
+import "package:ciudadano/features/notifications/data/repository/notification_repository_impl.dart";
+import "package:ciudadano/features/notifications/data/source/notification_api_source.dart";
+import "package:ciudadano/features/notifications/data/source/notification_local_source.dart";
+import "package:ciudadano/features/notifications/domain/repository/notification_repository.dart";
+import "package:ciudadano/features/notifications/domain/usecases/initialize_notifications_use_case.dart";
+import "package:ciudadano/features/notifications/domain/usecases/listen_to_notifications_use_case.dart";
+import "package:ciudadano/features/notifications/domain/usecases/register_push_token_use_case.dart";
+import "package:ciudadano/features/notifications/domain/usecases/request_notification_permissions_use_case.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/logout/data/logout_datasource.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
@@ -68,6 +82,9 @@ void setUpServiceLocator() {
   sl.registerSingleton<SocketSource>(SocketSource());
   sl.registerSingleton<ChatLocalSource>(ChatLocalSource());
   sl.registerSingleton<ChatApiSource>(ChatApiSource());
+  sl.registerSingleton<NotificationLocalSource>(NotificationLocalSourceImpl());
+  sl.registerSingleton<NotificationApiSource>(NotificationApiSourceImpl());
+  sl.registerSingleton<AlertRemoteDataSource>(AlertRemoteDataSourceImpl());
 
   //Repositories
   sl.registerSingleton<LocationRepository>(LocationRepositoryImpl());
@@ -80,6 +97,15 @@ void setUpServiceLocator() {
   sl.registerSingleton<ChatRepository>(
     ChatRepositoryImpl(sl<ChatApiSource>(), sl<ChatLocalSource>()),
   );
+  sl.registerSingleton<NotificationRepository>(
+    NotificationRepositoryImpl(
+      localSource: sl<NotificationLocalSource>(),
+      apiSource: sl<NotificationApiSource>(),
+    ),
+  );
+  sl.registerSingleton<AlertRepository>(
+    AlertRepositoryImpl(remoteDataSource: sl<AlertRemoteDataSource>()),
+  );
 
   // Use Cases
   sl.registerSingleton(GetNearbyIncidentsUseCase(sl<IncidentRepository>()));
@@ -89,6 +115,17 @@ void setUpServiceLocator() {
   sl.registerSingleton(CreateChatGroupUseCase(sl<ChatRepository>()));
   sl.registerSingleton(GetMessagesByGroupUseCase(sl<ChatRepository>()));
   sl.registerSingleton(SendMessageToGroupUseCase(sl<ChatRepository>()));
+  sl.registerSingleton(
+    InitializeNotificationsUseCase(sl<NotificationRepository>()),
+  );
+  sl.registerSingleton(RegisterPushTokenUseCase(sl<NotificationRepository>()));
+  sl.registerSingleton(
+    RequestNotificationPermissionsUseCase(sl<NotificationRepository>()),
+  );
+  sl.registerSingleton(
+    ListenToNotificationsUseCase(sl<NotificationRepository>()),
+  );
+  sl.registerSingleton(CreateAlertUseCase(sl<AlertRepository>()));
 
   // Cubits and Blocs
   sl.registerLazySingleton(() => LocationCubit(sl<LocationRepository>()));
@@ -105,6 +142,19 @@ void setUpServiceLocator() {
     () => SendMessageToGroupCubit(sl<SendMessageToGroupUseCase>()),
   );
   sl.registerFactory(() => UserProfileBloc());
+  sl.registerLazySingleton(
+    () => NotificationBloc(
+      initializeNotificationsUseCase: sl<InitializeNotificationsUseCase>(),
+      registerPushTokenUseCase: sl<RegisterPushTokenUseCase>(),
+      requestNotificationPermissionsUseCase:
+          sl<RequestNotificationPermissionsUseCase>(),
+      listenToNotificationsUseCase: sl<ListenToNotificationsUseCase>(),
+      notificationRepository: sl<NotificationRepository>(),
+    ),
+  );
+  sl.registerFactory(
+    () => AlertBloc(createAlertUseCase: sl<CreateAlertUseCase>()),
+  );
 
   // Logout
   sl.registerSingleton<LogoutDatasource>(LogoutDatasource(sl()));
