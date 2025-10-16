@@ -7,6 +7,8 @@ abstract class NearbyIncidentsEvent extends Equatable {
 
 class LoadNearbyIncidents extends NearbyIncidentsEvent {}
 
+class RefreshNearbyIncidents extends NearbyIncidentsEvent {}
+
 class NearbyIncidentReportedEvent extends NearbyIncidentsEvent {
   final Incident incident;
 

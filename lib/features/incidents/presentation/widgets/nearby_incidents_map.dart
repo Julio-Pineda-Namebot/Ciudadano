@@ -36,6 +36,13 @@ class NearbyIncidentsMap extends HookWidget {
     final locationCubit = useBloc<LocationCubit, LocationState>();
     final actualLocation = locationCubit.location!;
 
+    // Effect para cleanup de las actualizaciones automáticas
+    useEffect(() {
+      return () {
+        context.read<NearbyIncidentsBloc>().stopPeriodicUpdates();
+      };
+    }, []);
+
     return Skeletonizer(
       enabled:
           nearbyIncidentsState is NearbyIncidentsLoading ||
@@ -89,6 +96,46 @@ class NearbyIncidentsMap extends HookWidget {
                 ],
               ),
             ],
+          ),
+          Positioned(
+            top: 20,
+            left: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
+                    "Actualizando en tiempo real",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black87,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           Positioned(
             bottom: 20,

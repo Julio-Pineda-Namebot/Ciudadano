@@ -1,3 +1,4 @@
+import "dart:async";
 import "package:ciudadano/features/chats/domain/entity/chat_message.dart";
 import "package:ciudadano/features/chats/domain/usecases/get_messages_by_group_use_case.dart";
 import "package:equatable/equatable.dart";
@@ -43,9 +44,64 @@ class GroupMessagesGlobalState extends Equatable {
 
 class GroupMessagesCubit extends Cubit<GroupMessagesGlobalState> {
   final GetMessagesByGroupUseCase _getMessagesByGroupUseCase;
+  final Map<String, Timer?> _timers = {};
 
   GroupMessagesCubit(this._getMessagesByGroupUseCase)
     : super(const GroupMessagesGlobalState());
+
+  @override
+  Future<void> close() {
+    _cancelAllTimers();
+    return super.close();
+  }
+
+  void _cancelAllTimers() {
+    for (final timer in _timers.values) {
+      timer?.cancel();
+    }
+    _timers.clear();
+  }
+
+  void _cancelTimerForGroup(String groupId) {
+    _timers[groupId]?.cancel();
+    _timers.remove(groupId);
+  }
+
+  void _startPeriodicUpdates(String groupId) {
+    _cancelTimerForGroup(groupId);
+    _timers[groupId] = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _refreshMessagesForGroup(groupId),
+    );
+  }
+
+  Future<void> _refreshMessagesForGroup(String groupId) async {
+    // Solo actualizar si el grupo ya está cargado para evitar mostrar loading
+    final currentState = state.messagesGroupStatesMap[groupId];
+    if (currentState is! GroupMessagesLoadedState) return;
+
+    final result = await _getMessagesByGroupUseCase(groupId);
+    result.fold(
+      (message) => emit(
+        GroupMessagesGlobalState(
+          messagesGroupStatesMap: {
+            ...state.messagesGroupStatesMap,
+            groupId: GroupMessagesErrorState(message),
+          },
+        ),
+      ),
+      (messages) {
+        emit(
+          GroupMessagesGlobalState(
+            messagesGroupStatesMap: {
+              ...state.messagesGroupStatesMap,
+              groupId: GroupMessagesLoadedState(messages),
+            },
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> getMessagesByGroup(String groupId) async {
     emit(
@@ -76,8 +132,14 @@ class GroupMessagesCubit extends Cubit<GroupMessagesGlobalState> {
             },
           ),
         );
+        // Iniciar actualizaciones periódicas después de cargar exitosamente
+        _startPeriodicUpdates(groupId);
       },
     );
+  }
+
+  void stopPeriodicUpdates(String groupId) {
+    _cancelTimerForGroup(groupId);
   }
 
   void addMessageToGroup(String groupId, ChatMessage message) {

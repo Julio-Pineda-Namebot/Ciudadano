@@ -129,7 +129,11 @@ class ChatGroupPage extends HookWidget {
       if (chatMessages == null) {
         context.read<GroupMessagesCubit>().getMessagesByGroup(group.id);
       }
-      return null;
+
+      // Cleanup function para detener actualizaciones cuando se sale de la página
+      return () {
+        context.read<GroupMessagesCubit>().stopPeriodicUpdates(group.id);
+      };
     }, []);
 
     useEffect(() {
@@ -152,7 +156,42 @@ class ChatGroupPage extends HookWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(group.name, style: const TextStyle(fontSize: 20)),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(group.name, style: const TextStyle(fontSize: 20)),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    "Live",
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
         centerTitle: true,
       ),
       body: _buildBody(
