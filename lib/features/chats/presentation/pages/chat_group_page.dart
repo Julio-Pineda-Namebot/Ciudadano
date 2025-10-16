@@ -129,7 +129,7 @@ class ChatGroupPage extends HookWidget {
       if (chatMessages == null) {
         context.read<GroupMessagesCubit>().getMessagesByGroup(group.id);
       }
-      
+
       // Cleanup function para detener actualizaciones cuando se sale de la página
       return () {
         context.read<GroupMessagesCubit>().stopPeriodicUpdates(group.id);
