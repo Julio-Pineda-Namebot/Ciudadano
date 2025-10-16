@@ -160,11 +160,22 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                         ),
                         maxLines: 3,
                         onSaved: (value) => _description = value,
-                        validator:
-                            (value) =>
-                                value == null || value.isEmpty
-                                    ? "Ingrese una descripción"
-                                    : null,
+                        validator: ( value) {
+                          if(value == null || value.isEmpty){
+                            return "Ingrese una descripción";
+                          }
+
+                          if(value.trim().length < 3){
+                            return "Debe tener al menos 10 caracteres";
+                          }
+
+                          if(value.trim().length > 500){
+                            return "No puede tener más de 500 caracteres";
+                          }
+                          
+                          return null;
+                        }
+                            
                       ),
                     ],
                   ),
@@ -179,8 +190,15 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          if(_image == null){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Debe seleccionar una imagen. 📸"))
+                            );
+                            return;
+                          }
+
                           _formKey.currentState!.save();
-                          // Aquí puedes manejar el envío del formulario
+
                           context.read<CreateIncidentBloc>().add(
                             CreateIncidentSubmit(
                               CreateIncidentModel(
