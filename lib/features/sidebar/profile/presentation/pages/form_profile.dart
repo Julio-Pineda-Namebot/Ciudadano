@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
+import "package:lottie/lottie.dart";
 import "package:skeletonizer/skeletonizer.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_state.dart";
@@ -19,6 +20,14 @@ class _UserFormState extends State<UserForm> {
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
 
+  Map<String, bool> editing = {
+    "name": false,
+    "dni": false,
+    "email": false,
+    "phone": false,
+    "address": false,
+  };
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -35,7 +44,7 @@ class _UserFormState extends State<UserForm> {
       builder: (context, state) {
         final isLoading = state.name.isEmpty && state.email.isEmpty;
 
-        if (!isLoading) {
+        if (!isLoading && !editing.containsValue(true)) {
           _nameController.text = state.name;
           _dniController.text = state.dni;
           _emailController.text = state.email;
@@ -53,76 +62,60 @@ class _UserFormState extends State<UserForm> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
+
               Center(
                 child: Column(
                   children: [
-                    const CircleAvatar(
-                      radius: 48,
-                      backgroundColor: Colors.grey,
-                      child: Icon(Icons.photo_camera, size: 30),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text("Cambiar Foto"),
+                    CircleAvatar(
+                      radius: 70,
+                      backgroundColor: const Color.fromARGB(255, 218, 218, 218),
+                      child: Lottie.asset(
+                        "assets/lottie/user.json",
+                        width: 150,
+                        height: 150,
+                        repeat: false,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
-              _buildTextField("Nombre Completo", _nameController, (value) {
-                context.read<UserProfileBloc>().add(UpdateField(name: value));
-              }),
-              _buildTextField("DNI", _dniController, (value) {
-                context.read<UserProfileBloc>().add(UpdateField(dni: value));
-              }),
-              _buildTextField("Correo Electrónico", _emailController, (value) {
-                context.read<UserProfileBloc>().add(UpdateField(email: value));
-              }),
-              _buildTextField("Teléfono", _phoneController, (value) {
-                context.read<UserProfileBloc>().add(UpdateField(phone: value));
-              }),
-              _buildTextField("Dirección", _addressController, (value) {
-                context.read<UserProfileBloc>().add(
-                  UpdateField(address: value),
-                );
-              }),
-              const SizedBox(height: 24),
-              const Text(
-                "Notificaciones",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+              _buildTextField(
+                keyField: "name",
+                label: "Nombre Completo",
+                controller: _nameController,
+                onChanged: (value) =>
+                    context.read<UserProfileBloc>().add(UpdateField(name: value)),
               ),
-              SwitchListTile(
-                title: const Text("Notificaciones Push"),
-                value: state.pushNotifications,
-                onChanged: (value) {
-                  context.read<UserProfileBloc>().add(
-                    UpdateField(pushNotifications: value),
-                  );
-                },
+
+              _buildTextField(
+                keyField: "dni",
+                label: "DNI",
+                controller: _dniController,
+                onChanged: (value) =>
+                    context.read<UserProfileBloc>().add(UpdateField(dni: value)),
               ),
+
+              _buildTextField(
+                keyField: "email",
+                label: "Correo Electrónico",
+                controller: _emailController,
+                onChanged: (value) =>
+                    context.read<UserProfileBloc>().add(UpdateField(email: value)),
+              ),
+
+              _buildTextField(
+                keyField: "phone",
+                label: "Teléfono",
+                controller: _phoneController,
+                onChanged: (value) =>
+                    context.read<UserProfileBloc>().add(UpdateField(phone: value)),
+              ),
+
               const SizedBox(height: 16),
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    context.read<UserProfileBloc>().add(SaveProfile());
-                  },
-                  child: const Text(
-                    "Guardar Cambios",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
-                ),
-              ),
             ],
           ),
         );
@@ -130,18 +123,28 @@ class _UserFormState extends State<UserForm> {
     );
   }
 
-  Widget _buildTextField(
-    String label,
-    TextEditingController controller,
-    ValueChanged<String> onChanged,
-  ) {
+  Widget _buildTextField({
+    required String keyField,
+    required String label,
+    required TextEditingController controller,
+    required ValueChanged<String> onChanged,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
+        enabled: false,
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          suffixIcon: IconButton(
+            icon: Icon(
+              editing[keyField]! ? Icons.lock_open : Icons.lock,
+              color: editing[keyField]! ? Colors.green : Colors.grey,
+            ),
+            onPressed: () {
+            },
+          ),
         ),
         onChanged: onChanged,
       ),

@@ -8,28 +8,25 @@ class UserProfileModel extends UserProfile {
     required super.dni,
     required super.email,
     required super.phone,
-    required super.address,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
     return UserProfileModel(
       id: json["id"],
-      firstName: json["first_name"],
-      lastName: json["last_name"],
+      firstName: json["firstName"],
+      lastName: json["lastName"],
       dni: json["dni"] ?? "",
       email: json["email"],
       phone: json["phone"] ?? "",
-      address: json["address"] ?? "",
     );
   }
 
   Map<String, dynamic> toJson() => {
     "id": id,
-    "first_name": firstName,
-    "last_name": lastName,
+    "firstName": firstName,
+    "lastName": lastName,
     "dni": dni,
     "email": email,
     "phone": phone,
-    "address": address,
   };
 }

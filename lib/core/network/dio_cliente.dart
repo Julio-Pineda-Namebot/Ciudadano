@@ -10,7 +10,7 @@ class DioClient {
     : _dio = Dio(
         BaseOptions(
           headers: {"Content-Type": "application/json; charset=UTF-8"},
-          baseUrl: "${ApiConfig.ac}/api",
+          baseUrl: ApiConfig.ac,
           responseType: ResponseType.json,
           sendTimeout: const Duration(seconds: 60),
           receiveTimeout: const Duration(seconds: 60),

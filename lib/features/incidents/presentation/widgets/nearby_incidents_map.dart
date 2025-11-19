@@ -9,6 +9,7 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:flutter_hooks_bloc/flutter_hooks_bloc.dart";
 import "package:flutter_map/flutter_map.dart";
 import "package:skeletonizer/skeletonizer.dart";
+import "package:lottie/lottie.dart" hide Marker;
 
 class NearbyIncidentsMap extends HookWidget {
   NearbyIncidentsMap({super.key});
@@ -101,7 +102,7 @@ class NearbyIncidentsMap extends HookWidget {
             top: 20,
             left: 16,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
@@ -116,23 +117,13 @@ class NearbyIncidentsMap extends HookWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  const Text(
-                    "Actualizando en tiempo real",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black87,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  Lottie.asset(
+                    "assets/lottie/alert_green.json",
+                    width: 32,
+                    height: 32,
+                    repeat: true,
+                    animate: true
+                  )
                 ],
               ),
             ),

@@ -28,7 +28,6 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
           dni: profile.dni,
           email: profile.email,
           phone: profile.phone,
-          address: profile.address,
         ),
       );
     } catch (e) {
@@ -65,7 +64,6 @@ class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {
         dni: state.dni,
         email: state.email,
         phone: state.phone,
-        address: state.address,
       );
 
       await _datasource.updateProfile(updatedProfile);

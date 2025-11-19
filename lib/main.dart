@@ -35,6 +35,7 @@ import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
 import "package:flutter_localizations/flutter_localizations.dart";
 import "firebase_options.dart";
+import "package:ciudadano/common/widgets/network/network_listener.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,7 +66,12 @@ void main() async {
   SplashMaster.initialize();
   setUpServiceLocator();
   runApp(
-    const MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()),
+    const NetworkListener(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: SplashScreen(),
+      ),
+    ),
   );
 }
 
@@ -207,45 +213,49 @@ class MyApp extends StatelessWidget {
             print("Token: ${state.token.substring(0, 20)}...");
           }
         },
-        child: MaterialApp(
-          title: "Ciudadano",
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.appTheme,
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale("es"), Locale("en")],
-          locale: const Locale("es"),
-          home: BlocBuilder<PresentationBloc, PresentationState>(
-            builder: (context, state) {
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child:
-                    state is PresentationNotSeen
-                        ? const PresentationScreenPage()
-                        : FutureBuilder(
-                          future: _isLoggedIn(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
+        child: NetworkListener(
+          child: MaterialApp(
+            title: "Ciudadano",
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.appTheme,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale("es"), Locale("en")],
+            locale: const Locale("es"),
+            home: BlocBuilder<PresentationBloc, PresentationState>(
+              builder: (context, state) {
+                return AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 500),
+                  child:
+                      state is PresentationNotSeen
+                          ? const PresentationScreenPage()
+                          : FutureBuilder(
+                            future: _isLoggedIn(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
 
-                            if (snapshot.hasError) {
-                              return const LoginPage();
-                            }
+                              if (snapshot.hasError) {
+                                return const LoginPage();
+                              }
 
-                            return snapshot.data!
-                                ? _buildMainLayoutWithTokenRegistration(context)
-                                : const LoginPage();
-                          },
-                        ),
-              );
-            },
+                              return snapshot.data!
+                                  ? _buildMainLayoutWithTokenRegistration(
+                                    context,
+                                  )
+                                  : const LoginPage();
+                            },
+                          ),
+                );
+              },
+            ),
           ),
         ),
       ),

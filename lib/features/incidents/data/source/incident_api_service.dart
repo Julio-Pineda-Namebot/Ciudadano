@@ -13,7 +13,7 @@ class IncidentApiService {
 
   Future<Either<String, List<IncidentModel>>> getIncidents() async {
     try {
-      final response = await _dio.get("/incidents/");
+      final response = await _dio.get("/report/");
 
       final incidentList = response.data["data"] as List;
       return Right(incidentList.map((e) => IncidentModel.fromJson(e)).toList());
@@ -29,7 +29,7 @@ class IncidentApiService {
   ) async {
     try {
       final response = await _dio.get(
-        "/incidents/map/${location.latitude}/${location.longitude}",
+        "/incidents/nearby?lat=${location.latitude}&lon=${location.longitude}",
       );
 
       final incidentList = response.data["data"] as List;
@@ -53,7 +53,7 @@ class IncidentApiService {
       final formData = await incident.toFormData();
 
       final response = await _dio.post(
-        "/incidents",
+        "/incidents/report",
         data: formData,
         options: Options(
           headers: {HttpHeaders.contentTypeHeader: "multipart/form-data"},

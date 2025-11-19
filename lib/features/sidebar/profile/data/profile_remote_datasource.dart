@@ -10,8 +10,8 @@ class ProfileRemoteDatasource {
     try {
       final response = await _dio.get("/auth/profile");
 
-      final userJson = response.data["data"]["user"];
-
+      final userJson = response.data["data"];
+      
       return UserProfileModel.fromJson(userJson);
     } on DioException catch (e) {
       final responseData = e.response?.data;
