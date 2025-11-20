@@ -46,7 +46,11 @@ class CentrosAyudaPage extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Icon(Icons.location_on, size: 32, color: Colors.red),
+                      const Icon(
+                        Icons.location_on,
+                        size: 32,
+                        color: Colors.red,
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -71,8 +75,12 @@ class CentrosAyudaPage extends StatelessWidget {
                       const SizedBox(width: 12),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () {

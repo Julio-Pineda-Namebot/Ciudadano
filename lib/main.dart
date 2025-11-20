@@ -1,14 +1,15 @@
 import "dart:async";
 
 import "package:ciudadano/common/widgets/layouts/main/main_layout.dart";
+import "package:ciudadano/common/widgets/network/network_listener.dart";
 import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
 import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_screen_page.dart";
 import "package:ciudadano/config/theme/app_theme.dart";
+import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
 import "package:ciudadano/features/chats/presentation/bloc/contacts/chat_contacts_bloc.dart";
 import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
 import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
-import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
@@ -16,26 +17,24 @@ import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_b
 import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_event.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_event.dart";
-import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
 import "package:ciudadano/features/notifications/presentation/bloc/notification_event.dart";
 import "package:ciudadano/features/notifications/presentation/bloc/notification_state.dart";
-import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
+import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
-import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
+import "package:flutter_localizations/flutter_localizations.dart";
 import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:lottie/lottie.dart";
 import "package:splash_master/splash_master.dart";
-import "package:flutter_localizations/flutter_localizations.dart";
+
 import "firebase_options.dart";
-import "package:ciudadano/common/widgets/network/network_listener.dart";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -143,17 +142,12 @@ class MyApp extends StatelessWidget {
           create:
               (context) => PresentationBloc()..add(CheckPresentationEvent()),
         ),
-        BlocProvider(
-          create: (context) => sl<LocationCubit>()..loadInitialLocation(),
-        ),
-        BlocProvider(
-          create:
-              (context) =>
-                  sl<NearbyIncidentsBloc>()..add(LoadNearbyIncidents()),
-        ),
-        BlocProvider(
-          create: (context) => sl<SocketBloc>()..add(ConnectToSocketEvent()),
-        ),
+        BlocProvider(create: (context) => sl<LocationCubit>()),
+        // BlocProvider(
+        //   create:
+        //       (context) =>
+        //           sl<NearbyIncidentsBloc>()..add(LoadNearbyIncidents()),
+        // ),
         BlocProvider(create: (context) => sl<ChatGroupsBloc>()),
         BlocProvider(
           create:

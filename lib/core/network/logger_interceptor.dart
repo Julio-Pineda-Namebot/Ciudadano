@@ -21,13 +21,16 @@ class LoggerInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final requestPath = "${options.baseUrl}${options.path}";
-    logger.i("${options.method} request ==> $requestPath"); //Info log
+    // final requestPath = "${options.baseUrl}${options.path}";
+    // logger.i("${options.method} request ==> $requestPath"); //Info log
     handler.next(options); // continue with the Request
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final options = response.requestOptions;
+    final requestPath = "${options.baseUrl}${options.path}";
+    logger.i("${options.method} request ==> $requestPath"); //Info log
     logger.d(
       "STATUSCODE: ${response.statusCode} \n "
       "STATUSMESSAGE: ${response.statusMessage} \n"

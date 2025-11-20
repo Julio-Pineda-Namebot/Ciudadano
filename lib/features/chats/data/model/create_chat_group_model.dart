@@ -9,6 +9,6 @@ class CreateChatGroupModel extends CreateChatGroup {
 
   @override
   Map<String, dynamic> toJson() {
-    return {"name": name, "description": description, "users": members};
+    return {"name": name, "description": description, "memberIds": members};
   }
 }

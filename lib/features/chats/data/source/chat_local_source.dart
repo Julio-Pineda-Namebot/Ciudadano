@@ -9,6 +9,7 @@ class ChatLocalSource {
       return const Left("Permiso denegado");
     }
 
+    print("Contacts permission status: $status");
     if (status.isPermanentlyDenied) {
       return const Left("Permiso permanentemente denegado");
     }

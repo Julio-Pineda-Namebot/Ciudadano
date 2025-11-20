@@ -72,7 +72,7 @@ class ChatGroupsList extends HookWidget {
             ),
           ),
           title: Text(group.name),
-          subtitle: Text(group.description),
+          subtitle: Text(group.description ?? ""),
           trailing: const Icon(Icons.chevron_right),
           onTap: () {
             Navigator.push(

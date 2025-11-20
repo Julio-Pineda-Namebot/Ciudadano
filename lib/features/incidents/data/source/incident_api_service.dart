@@ -2,7 +2,7 @@ import "dart:io";
 
 import "package:ciudadano/core/network/dio_cliente.dart";
 import "package:ciudadano/features/incidents/data/models/incident_model.dart";
-import "package:ciudadano/features/incidents/domain/entities/create_incident.dart";
+import "package:ciudadano/features/incidents/domain/entities/report_incident.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:dartz/dartz.dart";
 import "package:dio/dio.dart";
@@ -46,8 +46,8 @@ class IncidentApiService {
     }
   }
 
-  Future<Either<String, IncidentModel>> createIncident(
-    CreateIncident incident,
+  Future<Either<String, IncidentModel>> reportIncident(
+    ReportIncident incident,
   ) async {
     try {
       final formData = await incident.toFormData();

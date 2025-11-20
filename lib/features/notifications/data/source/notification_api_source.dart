@@ -22,12 +22,12 @@ class NotificationApiSourceImpl implements NotificationApiSource {
       }
 
       final response = await _dio.post(
-        "/push-notifications/register-token",
+        "/push-tokens/register",
         data: {"token": token, "platform": platform},
         options: Options(headers: {"Authorization": "Bearer $authToken"}),
       );
 
-      return response.statusCode == 200 && response.data["success"] == true;
+      return response.statusCode == 201;
     } catch (e) {
       throw Exception("Failed to register push token: $e");
     }
@@ -43,12 +43,12 @@ class NotificationApiSourceImpl implements NotificationApiSource {
       }
 
       final response = await _dio.post(
-        "/push-notifications/unregister-token",
+        "/push-tokens/unregister",
         data: {"token": token},
         options: Options(headers: {"Authorization": "Bearer $authToken"}),
       );
 
-      return response.statusCode == 200 && response.data["success"] == true;
+      return response.statusCode == 204;
     } catch (e) {
       throw Exception("Failed to unregister push token: $e");
     }

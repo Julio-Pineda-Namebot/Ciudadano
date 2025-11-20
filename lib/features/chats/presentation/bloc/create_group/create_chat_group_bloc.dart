@@ -21,7 +21,6 @@ class CreateChatGroupBloc
     Emitter<CreateChatGroupState> emit,
   ) async {
     emit(const SubmittingCreateChatGroupState());
-
     final result = await _createChatGroupUseCase(event.group);
 
     result.fold(

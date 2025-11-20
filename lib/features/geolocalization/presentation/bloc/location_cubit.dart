@@ -1,45 +1,81 @@
 import "dart:async";
 
+import "package:ciudadano/features/geolocalization/domain/exceptions/location_permission_denied_exception.dart";
+import "package:ciudadano/features/geolocalization/domain/exceptions/location_service_unavailable_exception.dart";
 import "package:ciudadano/features/geolocalization/domain/repository/location_repository.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:latlong2/latlong.dart";
 
-class LocationState {
-  final LatLng? location;
-  final bool isLoading;
+abstract class LocationState {
+  const LocationState();
+}
 
-  const LocationState(this.location, {this.isLoading = false});
+class LocationLoadingState extends LocationState {
+  const LocationLoadingState();
+}
+
+class LocationLoadedState extends LocationState {
+  final LatLng location;
+
+  const LocationLoadedState(this.location);
+}
+
+class LocationPermissionDeniedState extends LocationState {
+  const LocationPermissionDeniedState();
+}
+
+class LocationErrorState extends LocationState {
+  final String message;
+
+  const LocationErrorState(this.message);
+}
+
+class LocationErrorServiceUnavailableState extends LocationErrorState {
+  const LocationErrorServiceUnavailableState()
+    : super("Servicio de ubicación no disponible");
+}
+
+class LocationErrorPermissionDeniedState extends LocationErrorState {
+  const LocationErrorPermissionDeniedState()
+    : super("Permiso de ubicación denegado");
 }
 
 class LocationCubit extends Cubit<LocationState> {
   final LocationRepository _locationRepository;
-  StreamSubscription<LatLng>? _locationSubscription;
+  StreamSubscription<LatLng>? locationSubscription;
 
-  LocationCubit(this._locationRepository) : super(const LocationState(null)) {
-    _startListening();
+  LocationCubit(this._locationRepository)
+    : super(const LocationLoadingState()) {
+    _loadInitialLocation().then((_) => _startListening());
   }
 
   void _startListening() {
-    _locationSubscription = _locationRepository.getLocationStream().listen((
+    locationSubscription = _locationRepository.getLocationStream().listen((
       location,
     ) {
       if (!isClosed) {
-        emit(LocationState(location));
+        emit(LocationLoadedState(location));
       }
     });
   }
 
-  Future<void> loadInitialLocation() async {
-    emit(const LocationState(null, isLoading: true));
-    final location = await _locationRepository.getCurrentLocation();
-    emit(LocationState(location, isLoading: false));
+  Future<void> _loadInitialLocation() async {
+    emit(const LocationLoadingState());
+    try {
+      final location = await _locationRepository.getCurrentLocation();
+      emit(LocationLoadedState(location));
+    } on LocationPermissionDeniedException {
+      emit(const LocationErrorPermissionDeniedState());
+    } on LocationServiceUnavailableException {
+      emit(const LocationErrorServiceUnavailableState());
+    } catch (e) {
+      emit(LocationErrorState(e.toString()));
+    }
   }
 
   @override
   Future<void> close() {
-    _locationSubscription?.cancel();
+    locationSubscription?.cancel();
     return super.close();
   }
-
-  LatLng? get currentLocation => state.location;
 }

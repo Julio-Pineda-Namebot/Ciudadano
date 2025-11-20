@@ -15,20 +15,14 @@ class CamCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           ClipRRect(
-            borderRadius:
-                const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.asset(
-              feed.gifPath,
-              fit: BoxFit.cover,
-              height: 180,
-            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: Image.asset(feed.gifPath, fit: BoxFit.cover, height: 180),
           ),
           Padding(
             padding: const EdgeInsets.all(12),
             child: Text(
               feed.titulo,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
         ],

@@ -147,7 +147,7 @@ class GroupMessagesCubit extends Cubit<GroupMessagesGlobalState> {
     if (currentState is GroupMessagesLoadedState) {
       final updatedMessages = List<ChatMessage>.from(
         currentState.messagesByGroup,
-      )..add(message);
+      )..insert(0, message);
       emit(
         GroupMessagesGlobalState(
           messagesGroupStatesMap: {

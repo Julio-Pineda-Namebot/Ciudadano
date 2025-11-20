@@ -8,8 +8,8 @@ class CamFeedModel extends CamFeed {
   });
 
   factory CamFeedModel.fromJson(Map<String, dynamic> json) => CamFeedModel(
-        id: json["id"] as int,
-        titulo: json["titulo"] as String,
-        gifPath: json["gif"] as String,
-      );
+    id: json["id"] as int,
+    titulo: json["titulo"] as String,
+    gifPath: json["gif"] as String,
+  );
 }
