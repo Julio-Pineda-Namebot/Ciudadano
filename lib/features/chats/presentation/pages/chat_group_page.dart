@@ -1,3 +1,4 @@
+import "package:ciudadano/common/hooks/use_bloc_provider.dart";
 import "package:ciudadano/common/hooks/use_chat.dart";
 import "package:ciudadano/features/chats/data/model/send_message_to_group_model.dart";
 import "package:ciudadano/features/chats/domain/entity/chat_group.dart";
@@ -77,10 +78,6 @@ class ChatGroupPage extends HookWidget {
                 deliveredAt: success.createdAt,
               ),
             );
-            context.read<GroupMessagesCubit>().addMessageToGroup(
-              group.id,
-              success,
-            );
           },
         );
       },
@@ -109,9 +106,12 @@ class ChatGroupPage extends HookWidget {
   Widget build(BuildContext context) {
     final chatController = useChat();
     final userProfile = useBloc<UserProfileBloc, UserProfileState>();
-    final chatMessages =
-        useBloc<GroupMessagesCubit, GroupMessagesGlobalState>()
-            .messagesGroupStatesMap[group.id];
+    final chatMessagesCubit = useBlocProvider(
+      () => sl<GroupMessagesCubit>()..getMessagesByGroup(group.id),
+    );
+    final chatMessages = useBloc<GroupMessagesCubit, GroupMessagesState>(
+      bloc: chatMessagesCubit,
+    );
 
     final usersMapped = useMemoized(() {
       if (chatMessages is GroupMessagesLoadedState) {
@@ -127,15 +127,8 @@ class ChatGroupPage extends HookWidget {
     }, [chatMessages]);
 
     useEffect(() {
-      if (chatMessages == null) {
-        context.read<GroupMessagesCubit>().getMessagesByGroup(group.id);
-      }
-
       sl<ChatRepository>().joinChatGroup(group.id);
-
-      // Cleanup function para detener actualizaciones cuando se sale de la página
       return () {
-        context.read<GroupMessagesCubit>().stopPeriodicUpdates(group.id);
         sl<ChatRepository>().leaveChatGroup();
       };
     }, []);
@@ -143,19 +136,15 @@ class ChatGroupPage extends HookWidget {
     useEffect(() {
       if (chatMessages is GroupMessagesLoadedState) {
         chatController.setMessages(
-          chatMessages.messagesByGroup
-              .map((message) {
-                return TextMessage(
-                  id: message.id,
-                  text: message.content,
-                  createdAt: message.createdAt,
-                  deliveredAt: message.createdAt,
-                  authorId: message.sender.id,
-                );
-              })
-              .toList()
-              .reversed
-              .toList(),
+          chatMessages.messagesByGroup.reversed.map((message) {
+            return TextMessage(
+              id: message.id,
+              text: message.content,
+              createdAt: message.createdAt,
+              deliveredAt: message.createdAt,
+              authorId: message.sender.id,
+            );
+          }).toList(),
         );
       }
 

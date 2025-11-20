@@ -3,10 +3,12 @@ import "package:ciudadano/common/widgets/navigations_bar.dart";
 import "package:ciudadano/common/widgets/pages/home/home_page.dart";
 import "package:ciudadano/common/widgets/sidebar_menu.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
+import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
 import "package:ciudadano/features/chats/presentation/pages/chats_page.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/page/report_incident_page.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
+import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:sidebarx/sidebarx.dart";
@@ -28,8 +30,15 @@ class MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
 
   @override
+  void initState() {
+    sl<ChatWsSource>().connect();
+    super.initState();
+  }
+
+  @override
   void dispose() {
     _sidebarController.dispose();
+    sl<ChatWsSource>().disconnect();
     super.dispose();
   }
 
@@ -67,6 +76,7 @@ class MainLayoutState extends State<MainLayout> {
             BlocListener<LogoutBloc, LogoutState>(
               listener: (context, state) {
                 if (state is LogoutSuccess) {
+                  temporalClearMemoryDataSources();
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (_) => const LoginPage()),
                     (route) => false,

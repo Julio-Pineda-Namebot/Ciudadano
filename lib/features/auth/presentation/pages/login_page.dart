@@ -1,4 +1,6 @@
 import "package:ciudadano/common/widgets/layouts/main/main_layout.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
+import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
 import "package:flutter/material.dart";
 import "package:flutter_login/flutter_login.dart";
 import "package:ciudadano/features/auth/data/auth_remote_datasource.dart";
@@ -19,7 +21,9 @@ class LoginPageState extends State<LoginPage> {
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   Future<String?> _authUser(LoginData data) async {
-    return await authRemoteDatasource.login(data.name, data.password);
+    final response = await authRemoteDatasource.login(data.name, data.password);
+    BlocProvider.of<UserProfileBloc>(context).add(FetchProfile());
+    return response;
   }
 
   Future<String?> _signupUser(SignupData data) async {

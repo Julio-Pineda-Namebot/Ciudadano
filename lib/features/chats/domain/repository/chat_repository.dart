@@ -6,8 +6,10 @@ import "package:dartz/dartz.dart";
 
 abstract class ChatRepository {
   Future<Either<String, List<ChatContact>>> getContacts();
+  Stream<List<ChatContact>> watchContacts();
 
   Future<Either<String, List<ChatGroup>>> getGroups();
+  Stream<List<ChatGroup>> watchGroups();
 
   Future<Either<String, ChatGroup>> createGroup(CreateChatGroup group);
 
@@ -17,6 +19,7 @@ abstract class ChatRepository {
   );
 
   Future<Either<String, List<ChatMessage>>> getMessagesByGroup(String groupId);
+  Stream<List<ChatMessage>> watchMessagesByGroup(String groupId);
 
   Future<Either<String, void>> joinChatGroup(String groupId);
   Future<Either<String, void>> leaveChatGroup();

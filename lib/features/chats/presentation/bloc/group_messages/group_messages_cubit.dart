@@ -1,6 +1,7 @@
 import "dart:async";
 import "package:ciudadano/features/chats/domain/entity/chat_message.dart";
 import "package:ciudadano/features/chats/domain/usecases/get_messages_by_group_use_case.dart";
+import "package:ciudadano/features/chats/domain/usecases/watch_chat_group_messages_use_case.dart";
 import "package:equatable/equatable.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 
@@ -33,129 +34,119 @@ class GroupMessagesErrorState extends GroupMessagesState {
   List<Object?> get props => [message];
 }
 
-class GroupMessagesGlobalState extends Equatable {
-  final Map<String, GroupMessagesState> messagesGroupStatesMap;
+// class GroupMessagesGlobalState extends Equatable {
+//   final Map<String, GroupMessagesState> messagesGroupStatesMap;
 
-  const GroupMessagesGlobalState({this.messagesGroupStatesMap = const {}});
+//   const GroupMessagesGlobalState({this.messagesGroupStatesMap = const {}});
 
-  @override
-  List<Object?> get props => [messagesGroupStatesMap];
-}
+//   @override
+//   List<Object?> get props => [messagesGroupStatesMap];
+// }
 
-class GroupMessagesCubit extends Cubit<GroupMessagesGlobalState> {
+class GroupMessagesCubit extends Cubit<GroupMessagesState> {
   final GetMessagesByGroupUseCase _getMessagesByGroupUseCase;
-  final Map<String, Timer?> _timers = {};
+  final WatchChatGroupMessagesUseCase _watchChatGroupMessagesUseCase;
+  StreamSubscription? _messagesSubscription;
 
-  GroupMessagesCubit(this._getMessagesByGroupUseCase)
-    : super(const GroupMessagesGlobalState());
+  GroupMessagesCubit(
+    this._getMessagesByGroupUseCase,
+    this._watchChatGroupMessagesUseCase,
+  ) : super(const GroupMessagesLoadingState());
+
+  // @override
+  // Future<void> close() {
+  //   _cancelAllTimers();
+  //   return super.close();
+  // }
+
+  // void _cancelAllTimers() {
+  //   for (final timer in _timers.values) {
+  //     timer?.cancel();
+  //   }
+  //   _timers.clear();
+  // }
+
+  // void _cancelTimerForGroup(String groupId) {
+  //   _timers[groupId]?.cancel();
+  //   _timers.remove(groupId);
+  // }
+
+  // void _startPeriodicUpdates(String groupId) {
+  //   _cancelTimerForGroup(groupId);
+  //   _timers[groupId] = Timer.periodic(
+  //     const Duration(seconds: 5),
+  //     (_) => _refreshMessagesForGroup(groupId),
+  //   );
+  // }
+
+  // Future<void> _refreshMessagesForGroup(String groupId) async {
+  //   // Solo actualizar si el grupo ya está cargado para evitar mostrar loading
+  //   final currentState = state.messagesGroupStatesMap[groupId];
+  //   if (currentState is! GroupMessagesLoadedState) return;
+
+  //   final result = await _getMessagesByGroupUseCase(groupId);
+  //   result.fold(
+  //     (message) => emit(
+  //       GroupMessagesGlobalState(
+  //         messagesGroupStatesMap: {
+  //           ...state.messagesGroupStatesMap,
+  //           groupId: GroupMessagesErrorState(message),
+  //         },
+  //       ),
+  //     ),
+  //     (messages) {
+  //       emit(
+  //         GroupMessagesGlobalState(
+  //           messagesGroupStatesMap: {
+  //             ...state.messagesGroupStatesMap,
+  //             groupId: GroupMessagesLoadedState(messages),
+  //           },
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  Future<void> getMessagesByGroup(String groupId) async {
+    emit(const GroupMessagesLoadingState());
+
+    final result = await _getMessagesByGroupUseCase(groupId);
+    result.fold((message) => emit(GroupMessagesErrorState(message)), (
+      messages,
+    ) {
+      emit(GroupMessagesLoadedState(messages));
+      _messagesSubscription ??= _watchChatGroupMessagesUseCase(groupId).listen((
+        messages,
+      ) {
+        emit(GroupMessagesLoadedState(messages));
+      });
+    });
+  }
 
   @override
   Future<void> close() {
-    _cancelAllTimers();
+    _messagesSubscription?.cancel();
     return super.close();
   }
 
-  void _cancelAllTimers() {
-    for (final timer in _timers.values) {
-      timer?.cancel();
-    }
-    _timers.clear();
-  }
+  // void stopPeriodicUpdates(String groupId) {
+  //   _cancelTimerForGroup(groupId);
+  // }
 
-  void _cancelTimerForGroup(String groupId) {
-    _timers[groupId]?.cancel();
-    _timers.remove(groupId);
-  }
-
-  void _startPeriodicUpdates(String groupId) {
-    _cancelTimerForGroup(groupId);
-    _timers[groupId] = Timer.periodic(
-      const Duration(seconds: 5),
-      (_) => _refreshMessagesForGroup(groupId),
-    );
-  }
-
-  Future<void> _refreshMessagesForGroup(String groupId) async {
-    // Solo actualizar si el grupo ya está cargado para evitar mostrar loading
-    final currentState = state.messagesGroupStatesMap[groupId];
-    if (currentState is! GroupMessagesLoadedState) return;
-
-    final result = await _getMessagesByGroupUseCase(groupId);
-    result.fold(
-      (message) => emit(
-        GroupMessagesGlobalState(
-          messagesGroupStatesMap: {
-            ...state.messagesGroupStatesMap,
-            groupId: GroupMessagesErrorState(message),
-          },
-        ),
-      ),
-      (messages) {
-        emit(
-          GroupMessagesGlobalState(
-            messagesGroupStatesMap: {
-              ...state.messagesGroupStatesMap,
-              groupId: GroupMessagesLoadedState(messages),
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> getMessagesByGroup(String groupId) async {
-    emit(
-      GroupMessagesGlobalState(
-        messagesGroupStatesMap: {
-          ...state.messagesGroupStatesMap,
-          groupId: const GroupMessagesLoadingState(),
-        },
-      ),
-    );
-
-    final result = await _getMessagesByGroupUseCase(groupId);
-    result.fold(
-      (message) => emit(
-        GroupMessagesGlobalState(
-          messagesGroupStatesMap: {
-            ...state.messagesGroupStatesMap,
-            groupId: GroupMessagesErrorState(message),
-          },
-        ),
-      ),
-      (messages) {
-        emit(
-          GroupMessagesGlobalState(
-            messagesGroupStatesMap: {
-              ...state.messagesGroupStatesMap,
-              groupId: GroupMessagesLoadedState(messages),
-            },
-          ),
-        );
-        // Iniciar actualizaciones periódicas después de cargar exitosamente
-        _startPeriodicUpdates(groupId);
-      },
-    );
-  }
-
-  void stopPeriodicUpdates(String groupId) {
-    _cancelTimerForGroup(groupId);
-  }
-
-  void addMessageToGroup(String groupId, ChatMessage message) {
-    final currentState = state.messagesGroupStatesMap[groupId];
-    if (currentState is GroupMessagesLoadedState) {
-      final updatedMessages = List<ChatMessage>.from(
-        currentState.messagesByGroup,
-      )..insert(0, message);
-      emit(
-        GroupMessagesGlobalState(
-          messagesGroupStatesMap: {
-            ...state.messagesGroupStatesMap,
-            groupId: GroupMessagesLoadedState(updatedMessages),
-          },
-        ),
-      );
-    }
-  }
+  // void addMessageToGroup(String groupId, ChatMessage message) {
+  //   final currentState = state.messagesGroupStatesMap[groupId];
+  //   if (currentState is GroupMessagesLoadedState) {
+  //     final updatedMessages = List<ChatMessage>.from(
+  //       currentState.messagesByGroup,
+  //     )..insert(0, message);
+  //     emit(
+  //       GroupMessagesGlobalState(
+  //         messagesGroupStatesMap: {
+  //           ...state.messagesGroupStatesMap,
+  //           groupId: GroupMessagesLoadedState(updatedMessages),
+  //         },
+  //       ),
+  //     );
+  //   }
+  // }
 }

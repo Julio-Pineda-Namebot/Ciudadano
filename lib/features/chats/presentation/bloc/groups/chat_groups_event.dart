@@ -11,15 +11,8 @@ class LoadChatGroupsEvent extends ChatGroupsEvent {
   const LoadChatGroupsEvent();
 }
 
-class RefreshChatGroupsEvent extends ChatGroupsEvent {
-  const RefreshChatGroupsEvent();
-}
+class _ChatGroupsStreamUpdatedEvent extends ChatGroupsEvent {
+  final List<ChatGroup> chatGroups;
 
-class ChatGroupCreatedEvent extends ChatGroupsEvent {
-  final ChatGroup group;
-
-  const ChatGroupCreatedEvent(this.group);
-
-  @override
-  List<Object?> get props => [group];
+  const _ChatGroupsStreamUpdatedEvent(this.chatGroups);
 }

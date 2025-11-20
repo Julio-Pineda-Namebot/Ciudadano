@@ -42,9 +42,6 @@ class ChatGroupsCreateForm extends HookWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Grupo creado exitosamente")),
             );
-            context.read<ChatGroupsBloc>().add(
-              ChatGroupCreatedEvent(state.group),
-            );
             Navigator.of(context).pop();
           } else if (state is FailureCreateChatGroupState) {
             ScaffoldMessenger.of(
