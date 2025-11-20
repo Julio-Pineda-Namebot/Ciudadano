@@ -7,7 +7,6 @@ abstract class Incident {
   final LatLng location;
   final String? imageUrl;
   final DateTime createdAt;
-  final DateTime happenedAt;
 
   const Incident({
     required this.id,
@@ -16,6 +15,5 @@ abstract class Incident {
     required this.location,
     required this.imageUrl,
     required this.createdAt,
-    required this.happenedAt,
   });
 }

@@ -8,7 +8,9 @@ abstract class CamFeedLocalDatasource {
 
 class CamFeedLocalDatasourceImpl implements CamFeedLocalDatasource {
   final String assetPath;
-  CamFeedLocalDatasourceImpl({this.assetPath = "assets/data/surveillance.json"});
+  CamFeedLocalDatasourceImpl({
+    this.assetPath = "assets/data/surveillance.json",
+  });
 
   @override
   Future<List<CamFeedModel>> getCamaras() async {

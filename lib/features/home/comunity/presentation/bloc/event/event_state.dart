@@ -8,13 +8,16 @@ abstract class EventoState extends Equatable {
 }
 
 class EventoInitial extends EventoState {}
+
 class EventoLoading extends EventoState {}
+
 class EventoLoaded extends EventoState {
   final List<Evento> eventos;
   const EventoLoaded(this.eventos);
   @override
   List<Object?> get props => [eventos];
 }
+
 class EventoError extends EventoState {
   final String msg;
   const EventoError(this.msg);

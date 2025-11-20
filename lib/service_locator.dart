@@ -18,10 +18,6 @@ import "package:ciudadano/features/chats/presentation/bloc/create_group/create_c
 import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
 import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
 import "package:ciudadano/features/chats/presentation/bloc/send_message_to_group/send_message_to_group_cubit.dart";
-import "package:ciudadano/features/events/data/repository/socket_repository_impl.dart";
-import "package:ciudadano/features/events/data/source/socket_source.dart";
-import "package:ciudadano/features/events/domain/repository/socket_repository.dart";
-import "package:ciudadano/features/events/presentation/bloc/socket_bloc.dart";
 import "package:ciudadano/features/geolocalization/data/repository/location_repository_impl.dart";
 import "package:ciudadano/features/geolocalization/domain/repository/location_repository.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
@@ -45,10 +41,12 @@ import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_b
 import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
 import "package:ciudadano/features/incidents/data/repository/incident_repository_impl.dart";
 import "package:ciudadano/features/incidents/data/source/incident_api_service.dart";
+import "package:ciudadano/features/incidents/data/source/incident_in_memory_source.dart";
 import "package:ciudadano/features/incidents/domain/repository/incident_repository.dart";
-import "package:ciudadano/features/incidents/domain/usecases/create_incident_use_case.dart";
+import "package:ciudadano/features/incidents/domain/usecases/report_incident_use_case.dart";
 import "package:ciudadano/features/incidents/domain/usecases/get_nearby_incidents.dart";
-import "package:ciudadano/features/incidents/presentation/bloc/create_incident/create_incident_bloc.dart";
+import "package:ciudadano/features/incidents/domain/usecases/watch_nearby_incidents_use_case.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/create_incident/report_incident_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/notifications/data/repository/notification_repository_impl.dart";
 import "package:ciudadano/features/notifications/data/source/notification_api_source.dart";
@@ -79,7 +77,7 @@ void setUpServiceLocator() {
 
   // Sources
   sl.registerSingleton<IncidentApiService>(IncidentApiService());
-  sl.registerSingleton<SocketSource>(SocketSource());
+  sl.registerSingleton<IncidentInMemorySource>(IncidentInMemorySource());
   sl.registerSingleton<ChatLocalSource>(ChatLocalSource());
   sl.registerSingleton<ChatApiSource>(ChatApiSource());
   sl.registerSingleton<NotificationLocalSource>(NotificationLocalSourceImpl());
@@ -89,10 +87,10 @@ void setUpServiceLocator() {
   //Repositories
   sl.registerSingleton<LocationRepository>(LocationRepositoryImpl());
   sl.registerSingleton<IncidentRepository>(
-    IncidentRepositoryImpl(sl<IncidentApiService>()),
-  );
-  sl.registerSingleton<SocketRepository>(
-    SocketRepositoryImpl(sl<SocketSource>()),
+    IncidentRepositoryImpl(
+      sl<IncidentApiService>(),
+      sl<IncidentInMemorySource>(),
+    ),
   );
   sl.registerSingleton<ChatRepository>(
     ChatRepositoryImpl(sl<ChatApiSource>(), sl<ChatLocalSource>()),
@@ -109,7 +107,8 @@ void setUpServiceLocator() {
 
   // Use Cases
   sl.registerSingleton(GetNearbyIncidentsUseCase(sl<IncidentRepository>()));
-  sl.registerSingleton(CreateIncidentUseCase(sl<IncidentRepository>()));
+  sl.registerSingleton(WatchNearbyIncidentsUseCase(sl<IncidentRepository>()));
+  sl.registerSingleton(ReportIncidentUseCase(sl<IncidentRepository>()));
   sl.registerSingleton(GetContactsByPhoneUseCase(sl<ChatRepository>()));
   sl.registerSingleton(GetGroupsUseCase(sl<ChatRepository>()));
   sl.registerSingleton(CreateChatGroupUseCase(sl<ChatRepository>()));
@@ -128,12 +127,14 @@ void setUpServiceLocator() {
   sl.registerSingleton(CreateAlertUseCase(sl<AlertRepository>()));
 
   // Cubits and Blocs
-  sl.registerLazySingleton(() => LocationCubit(sl<LocationRepository>()));
+  sl.registerFactory(() => LocationCubit(sl<LocationRepository>()));
   sl.registerFactory(
-    () => NearbyIncidentsBloc(sl<GetNearbyIncidentsUseCase>()),
+    () => NearbyIncidentsBloc(
+      sl<GetNearbyIncidentsUseCase>(),
+      sl<WatchNearbyIncidentsUseCase>(),
+    ),
   );
-  sl.registerFactory(() => CreateIncidentBloc(sl<CreateIncidentUseCase>()));
-  sl.registerFactory(() => SocketBloc(sl<SocketRepository>()));
+  sl.registerFactory(() => ReportIncidentBloc(sl<ReportIncidentUseCase>()));
   sl.registerFactory(() => ChatContactsBloc(sl<GetContactsByPhoneUseCase>()));
   sl.registerFactory(() => ChatGroupsBloc(sl<GetGroupsUseCase>()));
   sl.registerFactory(() => CreateChatGroupBloc(sl<CreateChatGroupUseCase>()));

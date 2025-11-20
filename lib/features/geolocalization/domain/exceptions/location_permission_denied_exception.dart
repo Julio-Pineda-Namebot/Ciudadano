@@ -1,0 +1,1 @@
+class LocationPermissionDeniedException implements Exception {}

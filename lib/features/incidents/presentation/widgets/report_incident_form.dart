@@ -1,22 +1,22 @@
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
-import "package:ciudadano/features/incidents/data/models/create_incident_model.dart";
-import "package:ciudadano/features/incidents/presentation/bloc/create_incident/create_incident_bloc.dart";
+import "package:ciudadano/features/incidents/data/models/report_incident_model.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/create_incident/report_incident_bloc.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "dart:io";
 import "package:image_picker/image_picker.dart";
 
-class CreateIncidentForm extends StatefulWidget {
-  final VoidCallback? onCreateIncident;
+class ReportIncidentForm extends StatefulWidget {
+  final VoidCallback? onReportIncident;
 
-  const CreateIncidentForm({super.key, this.onCreateIncident});
+  const ReportIncidentForm({super.key, this.onReportIncident});
 
   @override
-  State<CreateIncidentForm> createState() => _CreateIncidentFormState();
+  State<ReportIncidentForm> createState() => _ReportIncidentFormState();
 }
 
-class _CreateIncidentFormState extends State<CreateIncidentForm> {
+class _ReportIncidentFormState extends State<ReportIncidentForm> {
   final _formKey = GlobalKey<FormState>();
   String? _incidentType;
   String? _description;
@@ -84,16 +84,16 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => sl<CreateIncidentBloc>(),
-      child: BlocListener<CreateIncidentBloc, CreateIncidentState>(
+      create: (context) => sl<ReportIncidentBloc>(),
+      child: BlocListener<ReportIncidentBloc, ReportIncidentState>(
         listener: (context, state) {
-          if (state is CreateIncidentSuccess) {
+          if (state is ReportIncidentSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Incidencia enviada exitosamente")),
             );
             _resetForm();
-            widget.onCreateIncident?.call();
-          } else if (state is CreateIncidentError) {
+            widget.onReportIncident?.call();
+          } else if (state is ReportIncidentError) {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(state.message)));
@@ -133,7 +133,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                           labelText: "Tipo de incidencia",
                           border: OutlineInputBorder(),
                         ),
-                        value: _incidentType,
+                        initialValue: _incidentType,
                         items:
                             _incidentTypes
                                 .map(
@@ -160,22 +160,21 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                         ),
                         maxLines: 3,
                         onSaved: (value) => _description = value,
-                        validator: ( value) {
-                          if(value == null || value.isEmpty){
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
                             return "Ingrese una descripción";
                           }
 
-                          if(value.trim().length < 3){
+                          if (value.trim().length < 3) {
                             return "Debe tener al menos 10 caracteres";
                           }
 
-                          if(value.trim().length > 500){
+                          if (value.trim().length > 500) {
                             return "No puede tener más de 500 caracteres";
                           }
-                          
+
                           return null;
-                        }
-                            
+                        },
                       ),
                     ],
                   ),
@@ -183,29 +182,39 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
               ),
 
               const SizedBox(height: 24),
-              BlocBuilder<CreateIncidentBloc, CreateIncidentState>(
+              BlocBuilder<ReportIncidentBloc, ReportIncidentState>(
                 builder: (context, state) {
                   return Opacity(
-                    opacity: state is CreateIncidentLoading ? 0.5 : 1,
+                    opacity: state is ReportIncidentLoading ? 0.5 : 1,
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          if(_image == null){
+                          if (_image == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Debe seleccionar una imagen. 📸"))
+                              const SnackBar(
+                                content: Text(
+                                  "Debe seleccionar una imagen. 📸",
+                                ),
+                              ),
                             );
                             return;
                           }
 
                           _formKey.currentState!.save();
 
-                          context.read<CreateIncidentBloc>().add(
-                            CreateIncidentSubmit(
-                              CreateIncidentModel(
+                          final locationState =
+                              BlocProvider.of<LocationCubit>(context).state;
+                          if (locationState is! LocationLoadedState) {
+                            return;
+                          }
+
+                          context.read<ReportIncidentBloc>().add(
+                            ReportIncidentSubmit(
+                              ReportIncidentModel(
                                 description: _description!,
-                                incidentType: _incidentType!,
+                                incidentType: _incidentType!.toLowerCase(),
                                 image: _image!,
-                                location: sl<LocationCubit>().state.location!,
+                                location: locationState.location,
                               ),
                             ),
                           );
@@ -219,7 +228,7 @@ class _CreateIncidentFormState extends State<CreateIncidentForm> {
                         minimumSize: const Size(double.infinity, 50),
                       ),
                       child:
-                          state is CreateIncidentLoading
+                          state is ReportIncidentLoading
                               ? const CircularProgressIndicator(
                                 color: Colors.white,
                               )

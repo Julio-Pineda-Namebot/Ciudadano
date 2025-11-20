@@ -1,8 +1,8 @@
-import "package:ciudadano/features/incidents/domain/entities/create_incident.dart";
+import "package:ciudadano/features/incidents/domain/entities/report_incident.dart";
 import "package:dio/dio.dart";
 
-class CreateIncidentModel extends CreateIncident {
-  const CreateIncidentModel({
+class ReportIncidentModel extends ReportIncident {
+  const ReportIncidentModel({
     required super.incidentType,
     required super.description,
     required super.image,
@@ -18,8 +18,8 @@ class CreateIncidentModel extends CreateIncident {
         image.path,
         contentType: DioMediaType("image", image.path.split(".").last),
       ),
-      "location_lat": location.latitude,
-      "location_lon": location.longitude,
+      "latitude": location.latitude,
+      "longitude": location.longitude,
     });
   }
 }

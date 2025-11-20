@@ -1,6 +1,8 @@
+import "package:ciudadano/common/hooks/use_bloc_provider.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/incident_marker.dart";
+import "package:ciudadano/service_locator.dart";
 // import "package:ciudadano/features/incidents/presentation/widgets/your_location_marker.dart";
 import "package:flutter_map_location_marker/flutter_map_location_marker.dart";
 import "package:flutter_map_compass/flutter_map_compass.dart";
@@ -31,17 +33,20 @@ class NearbyIncidentsMap extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final nearbyIncidentsBloc = useBlocProvider(
+      () => sl<NearbyIncidentsBloc>(),
+    );
     final nearbyIncidentsState =
-        useBloc<NearbyIncidentsBloc, NearbyIncidentsState>();
+        useBloc<NearbyIncidentsBloc, NearbyIncidentsState>(
+          bloc: nearbyIncidentsBloc,
+        );
 
-    final locationCubit = useBloc<LocationCubit, LocationState>();
-    final actualLocation = locationCubit.location!;
+    final locationCubitState =
+        useBloc<LocationCubit, LocationState>() as LocationLoadedState;
 
-    // Effect para cleanup de las actualizaciones automáticas
     useEffect(() {
-      return () {
-        context.read<NearbyIncidentsBloc>().stopPeriodicUpdates();
-      };
+      nearbyIncidentsBloc.add(LoadNearbyIncidents(locationCubitState.location));
+      return null;
     }, []);
 
     return Skeletonizer(
@@ -53,7 +58,7 @@ class NearbyIncidentsMap extends HookWidget {
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              initialCenter: actualLocation,
+              initialCenter: locationCubitState.location,
               initialZoom: 17.0,
               minZoom: 16.5,
               maxZoom: 17.5,
@@ -122,8 +127,8 @@ class NearbyIncidentsMap extends HookWidget {
                     width: 32,
                     height: 32,
                     repeat: true,
-                    animate: true
-                  )
+                    animate: true,
+                  ),
                 ],
               ),
             ),
@@ -133,7 +138,7 @@ class NearbyIncidentsMap extends HookWidget {
             right: 16,
             child: FloatingActionButton(
               onPressed: () {
-                _mapController.move(actualLocation, 17.0);
+                _mapController.move(locationCubitState.location, 17.0);
               },
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,

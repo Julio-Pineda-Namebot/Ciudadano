@@ -15,7 +15,7 @@ class EmergenciaPage extends StatelessWidget {
         title: const Text(
           "Emergencia",
           style: TextStyle(fontWeight: FontWeight.bold),
-        )
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -28,7 +28,9 @@ class EmergenciaPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const NumerosEmergenciaPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const NumerosEmergenciaPage(),
+                  ),
                 );
               },
             ),
@@ -62,8 +64,12 @@ class EmergenciaPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBotonEmergencia(BuildContext context,
-      {required IconData icon, required String label, required VoidCallback onTap}) {
+  Widget _buildBotonEmergencia(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
