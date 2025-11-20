@@ -1,5 +1,6 @@
 import "package:ciudadano/features/chats/data/source/chat_api_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_local_source.dart";
+import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
 import "package:ciudadano/features/chats/domain/entity/chat_contact.dart";
 import "package:ciudadano/features/chats/domain/entity/chat_group.dart";
 import "package:ciudadano/features/chats/domain/entity/chat_message.dart";
@@ -10,8 +11,13 @@ import "package:dartz/dartz.dart";
 class ChatRepositoryImpl implements ChatRepository {
   final ChatApiSource _chatApiSource;
   final ChatLocalSource _chatLocalSource;
+  final ChatWsSource _chatWsSource;
 
-  const ChatRepositoryImpl(this._chatApiSource, this._chatLocalSource);
+  const ChatRepositoryImpl(
+    this._chatApiSource,
+    this._chatLocalSource,
+    this._chatWsSource,
+  );
 
   @override
   Future<Either<String, List<ChatContact>>> getContacts() async {
@@ -43,7 +49,7 @@ class ChatRepositoryImpl implements ChatRepository {
 
   @override
   Future<Either<String, ChatGroup>> createGroup(CreateChatGroup group) {
-    return _chatApiSource.createGroup(group);
+    return _chatWsSource.createGroup(group);
   }
 
   @override
@@ -56,6 +62,16 @@ class ChatRepositoryImpl implements ChatRepository {
     String groupId,
     String content,
   ) {
-    return _chatApiSource.sendMessageToGroup(groupId, content);
+    return _chatWsSource.sendMessageToGroup(content);
+  }
+
+  @override
+  Future<Either<String, void>> joinChatGroup(String groupId) {
+    return _chatWsSource.joinChatGroup(groupId);
+  }
+
+  @override
+  Future<Either<String, void>> leaveChatGroup() {
+    return _chatWsSource.leaveChatGroup();
   }
 }

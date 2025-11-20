@@ -17,4 +17,7 @@ abstract class ChatRepository {
   );
 
   Future<Either<String, List<ChatMessage>>> getMessagesByGroup(String groupId);
+
+  Future<Either<String, void>> joinChatGroup(String groupId);
+  Future<Either<String, void>> leaveChatGroup();
 }

@@ -16,9 +16,9 @@ class AlertModel extends Alert {
     // Verificar si la respuesta incluye geolocalization (estructura de envío)
     double latitude, longitude;
 
-    if (json.containsKey("geolocalization")) {
-      latitude = double.parse(json["geolocalization"]["latitude"].toString());
-      longitude = double.parse(json["geolocalization"]["longitude"].toString());
+    if (json.containsKey("geolocation")) {
+      latitude = double.parse(json["geolocation"]["latitude"].toString());
+      longitude = double.parse(json["geolocation"]["longitude"].toString());
     } else if (json.containsKey("location_lat") &&
         json.containsKey("location_lon")) {
       // Estructura del backend (respuesta)
@@ -32,10 +32,10 @@ class AlertModel extends Alert {
 
     // Manejar diferentes campos de timestamp
     DateTime timestamp;
-    if (json.containsKey("triggered_at")) {
-      timestamp = DateTime.parse(json["triggered_at"]);
-    } else if (json.containsKey("created_at")) {
-      timestamp = DateTime.parse(json["created_at"]);
+    if (json.containsKey("triggeredAt")) {
+      timestamp = DateTime.parse(json["triggeredAt"]);
+    } else if (json.containsKey("createdAt")) {
+      timestamp = DateTime.parse(json["createdAt"]);
     } else {
       timestamp = DateTime.now();
     }

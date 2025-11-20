@@ -5,16 +5,16 @@ class ChatContactModel extends ChatContact {
     required super.id,
     required super.name,
     required super.phone,
-    required super.email,
+    super.email,
   });
 
   factory ChatContactModel.fromJson(Map<String, dynamic> json) {
     return ChatContactModel(
       id: json["id"] as String,
       name:
-          "${json["first_name"] as String} ${json["last_name"] as String? ?? ""}",
+          "${json["firstName"] as String} ${json["lastName"] as String? ?? ""}",
       phone: json["phone"] as String,
-      email: json["email"] as String,
+      email: json["email"] as String?,
     );
   }
 }

@@ -32,16 +32,12 @@ class AlertRemoteDataSourceImpl implements AlertRemoteDataSource {
   }) async {
     try {
       final response = await _dio.post(
-        "/alerts",
-        data: {
-          "geolocalization": {"latitude": latitude, "longitude": longitude},
-        },
+        "/alerts/dispatch",
+        data: {"latitude": latitude, "longitude": longitude},
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return AlertModel.fromJson(
-          response.data["data"]["alert"] ?? response.data,
-        );
+        return AlertModel.fromJson(response.data["data"] ?? response.data);
       } else {
         throw Exception("Failed to create alert: ${response.statusMessage}");
       }

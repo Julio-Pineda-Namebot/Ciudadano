@@ -7,6 +7,7 @@ import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/chats/data/repository/chat_repository_impl.dart";
 import "package:ciudadano/features/chats/data/source/chat_api_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_local_source.dart";
+import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
 import "package:ciudadano/features/chats/domain/repository/chat_repository.dart";
 import "package:ciudadano/features/chats/domain/usecases/create_chat_group_use_case.dart";
 import "package:ciudadano/features/chats/domain/usecases/get_contacts_by_phone_use_case.dart";
@@ -80,6 +81,7 @@ void setUpServiceLocator() {
   sl.registerSingleton<IncidentInMemorySource>(IncidentInMemorySource());
   sl.registerSingleton<ChatLocalSource>(ChatLocalSource());
   sl.registerSingleton<ChatApiSource>(ChatApiSource());
+  sl.registerSingleton<ChatWsSource>(ChatWsSource());
   sl.registerSingleton<NotificationLocalSource>(NotificationLocalSourceImpl());
   sl.registerSingleton<NotificationApiSource>(NotificationApiSourceImpl());
   sl.registerSingleton<AlertRemoteDataSource>(AlertRemoteDataSourceImpl());
@@ -93,7 +95,11 @@ void setUpServiceLocator() {
     ),
   );
   sl.registerSingleton<ChatRepository>(
-    ChatRepositoryImpl(sl<ChatApiSource>(), sl<ChatLocalSource>()),
+    ChatRepositoryImpl(
+      sl<ChatApiSource>(),
+      sl<ChatLocalSource>(),
+      sl<ChatWsSource>(),
+    ),
   );
   sl.registerSingleton<NotificationRepository>(
     NotificationRepositoryImpl(

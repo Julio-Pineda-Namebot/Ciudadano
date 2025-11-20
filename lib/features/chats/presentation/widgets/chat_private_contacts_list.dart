@@ -21,6 +21,12 @@ class ChatPrivateContactsList extends HookWidget {
   }
 
   Widget _buildChatListView(List<ChatContact> contacts, BuildContext context) {
+    if (contacts.isEmpty) {
+      return const Center(
+        child: Text("No se encontraron contactos disponibles."),
+      );
+    }
+
     return ListView.builder(
       itemCount: contacts.length,
       itemBuilder: (context, index) {

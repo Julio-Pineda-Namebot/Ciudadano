@@ -1,6 +1,7 @@
 import "package:ciudadano/common/hooks/use_chat.dart";
 import "package:ciudadano/features/chats/data/model/send_message_to_group_model.dart";
 import "package:ciudadano/features/chats/domain/entity/chat_group.dart";
+import "package:ciudadano/features/chats/domain/repository/chat_repository.dart";
 import "package:ciudadano/features/chats/domain/usecases/send_message_to_group_use_case.dart";
 import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
 import "package:ciudadano/features/chats/presentation/widgets/custom_style_message.dart";
@@ -130,24 +131,31 @@ class ChatGroupPage extends HookWidget {
         context.read<GroupMessagesCubit>().getMessagesByGroup(group.id);
       }
 
+      sl<ChatRepository>().joinChatGroup(group.id);
+
       // Cleanup function para detener actualizaciones cuando se sale de la página
       return () {
         context.read<GroupMessagesCubit>().stopPeriodicUpdates(group.id);
+        sl<ChatRepository>().leaveChatGroup();
       };
     }, []);
 
     useEffect(() {
       if (chatMessages is GroupMessagesLoadedState) {
         chatController.setMessages(
-          chatMessages.messagesByGroup.map((message) {
-            return TextMessage(
-              id: message.id,
-              text: message.content,
-              createdAt: message.createdAt,
-              deliveredAt: message.createdAt,
-              authorId: message.sender.id,
-            );
-          }).toList(),
+          chatMessages.messagesByGroup
+              .map((message) {
+                return TextMessage(
+                  id: message.id,
+                  text: message.content,
+                  createdAt: message.createdAt,
+                  deliveredAt: message.createdAt,
+                  authorId: message.sender.id,
+                );
+              })
+              .toList()
+              .reversed
+              .toList(),
         );
       }
 

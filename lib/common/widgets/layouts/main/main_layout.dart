@@ -79,7 +79,7 @@ class MainLayoutState extends State<MainLayout> {
             key: _scaffoldKey,
             appBar: CustomHeader(scaffoldKey: _scaffoldKey),
             drawer:
-                state is LocationLoadingState
+                state is LocationLoadedState
                     ? SidebarMenu(controller: _sidebarController)
                     : null,
             body: _buildBody(

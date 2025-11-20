@@ -4,8 +4,7 @@ class ChatGroupModel extends ChatGroup {
   const ChatGroupModel({
     required super.id,
     required super.name,
-    required super.description,
-    required super.code,
+    super.description,
     required super.createdAt,
   });
 
@@ -14,8 +13,7 @@ class ChatGroupModel extends ChatGroup {
       id: json["id"],
       name: json["name"],
       description: json["description"],
-      code: json["code"],
-      createdAt: DateTime.parse(json["creation_date"]),
+      createdAt: DateTime.parse(json["createdAt"]),
     );
   }
 }

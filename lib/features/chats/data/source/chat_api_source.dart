@@ -18,7 +18,7 @@ class ChatApiSource {
   ) async {
     try {
       final response = await _dio.get(
-        "/chats/contacts",
+        "/chats/possible-contacts",
         queryParameters: {"phones": phones.join(",")},
       );
       final data = response.data["data"] as List;
@@ -99,7 +99,7 @@ class ChatApiSource {
   ) async {
     try {
       final response = await _dio.get("/chats/groups/$groupId/messages");
-      final data = response.data["data"] as List;
+      final data = response.data["data"]["items"] as List;
       final messages =
           data.map((item) {
             return ChatMessageModel.fromJson(item);

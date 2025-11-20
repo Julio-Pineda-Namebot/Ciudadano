@@ -14,9 +14,9 @@ class ChatMessageModel extends ChatMessage {
     return ChatMessageModel(
       id: json["id"],
       content: json["content"],
-      createdAt: DateTime.parse(json["created_at"]),
-      sender: ChatContactModel.fromJson(json["user"]),
-      groupId: json["group_id"],
+      createdAt: DateTime.parse(json["createdAt"]),
+      sender: ChatContactModel.fromJson(json["sender"]),
+      groupId: json["groupId"],
     );
   }
 }
