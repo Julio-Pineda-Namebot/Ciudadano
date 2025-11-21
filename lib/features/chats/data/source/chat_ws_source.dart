@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:ciudadano/config/api/api_config.dart";
 import "package:ciudadano/features/chats/data/model/chat_group_model.dart";
 import "package:ciudadano/features/chats/data/model/chat_message_model.dart";
@@ -10,10 +12,6 @@ import "package:flutter_secure_storage/flutter_secure_storage.dart";
 import "package:socket_io_client/socket_io_client.dart" as io;
 
 class ChatWsSource {
-  ChatWsSource() {
-    connect();
-  }
-
   late io.Socket _socket;
 
   final String url = ApiConfig.ac
@@ -110,5 +108,21 @@ class ChatWsSource {
     }
 
     return Left(response["message"] ?? "Error desconocido del servidor");
+  }
+
+  Stream<ChatMessage> watchNewGroupMessageByGroupId(String groupId) {
+    final controller = StreamController<ChatMessage>(
+      onCancel: () => {_socket.off("chat_group:message_sent")},
+    );
+
+    _socket.on("chat_group:message_sent", (dynamic data) {
+      final chatMessage = ChatMessageModel.fromJson(data["group_message"]);
+      if (chatMessage.groupId != groupId) {
+        return;
+      }
+      controller.add(chatMessage);
+    });
+
+    return controller.stream;
   }
 }

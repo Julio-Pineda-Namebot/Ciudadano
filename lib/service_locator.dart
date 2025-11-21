@@ -6,6 +6,7 @@ import "package:ciudadano/features/alerts/domain/usecases/create_alert_use_case.
 import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/chats/data/repository/chat_repository_impl.dart";
 import "package:ciudadano/features/chats/data/source/chat_api_source.dart";
+import "package:ciudadano/features/chats/data/source/chat_in_memory_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_local_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
 import "package:ciudadano/features/chats/domain/repository/chat_repository.dart";
@@ -14,6 +15,8 @@ import "package:ciudadano/features/chats/domain/usecases/get_contacts_by_phone_u
 import "package:ciudadano/features/chats/domain/usecases/get_groups_use_case.dart";
 import "package:ciudadano/features/chats/domain/usecases/get_messages_by_group_use_case.dart";
 import "package:ciudadano/features/chats/domain/usecases/send_message_to_group_use_case.dart";
+import "package:ciudadano/features/chats/domain/usecases/watch_chat_group_messages_use_case.dart";
+import "package:ciudadano/features/chats/domain/usecases/watch_chat_groups_use_case.dart";
 import "package:ciudadano/features/chats/presentation/bloc/contacts/chat_contacts_bloc.dart";
 import "package:ciudadano/features/chats/presentation/bloc/create_group/create_chat_group_bloc.dart";
 import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
@@ -82,6 +85,7 @@ void setUpServiceLocator() {
   sl.registerSingleton<ChatLocalSource>(ChatLocalSource());
   sl.registerSingleton<ChatApiSource>(ChatApiSource());
   sl.registerSingleton<ChatWsSource>(ChatWsSource());
+  sl.registerSingleton<ChatInMemorySource>(ChatInMemorySource());
   sl.registerSingleton<NotificationLocalSource>(NotificationLocalSourceImpl());
   sl.registerSingleton<NotificationApiSource>(NotificationApiSourceImpl());
   sl.registerSingleton<AlertRemoteDataSource>(AlertRemoteDataSourceImpl());
@@ -99,6 +103,7 @@ void setUpServiceLocator() {
       sl<ChatApiSource>(),
       sl<ChatLocalSource>(),
       sl<ChatWsSource>(),
+      sl<ChatInMemorySource>(),
     ),
   );
   sl.registerSingleton<NotificationRepository>(
@@ -117,8 +122,10 @@ void setUpServiceLocator() {
   sl.registerSingleton(ReportIncidentUseCase(sl<IncidentRepository>()));
   sl.registerSingleton(GetContactsByPhoneUseCase(sl<ChatRepository>()));
   sl.registerSingleton(GetGroupsUseCase(sl<ChatRepository>()));
+  sl.registerSingleton(WatchChatGroupsUseCase(sl<ChatRepository>()));
   sl.registerSingleton(CreateChatGroupUseCase(sl<ChatRepository>()));
   sl.registerSingleton(GetMessagesByGroupUseCase(sl<ChatRepository>()));
+  sl.registerSingleton(WatchChatGroupMessagesUseCase(sl<ChatRepository>()));
   sl.registerSingleton(SendMessageToGroupUseCase(sl<ChatRepository>()));
   sl.registerSingleton(
     InitializeNotificationsUseCase(sl<NotificationRepository>()),
@@ -142,9 +149,16 @@ void setUpServiceLocator() {
   );
   sl.registerFactory(() => ReportIncidentBloc(sl<ReportIncidentUseCase>()));
   sl.registerFactory(() => ChatContactsBloc(sl<GetContactsByPhoneUseCase>()));
-  sl.registerFactory(() => ChatGroupsBloc(sl<GetGroupsUseCase>()));
+  sl.registerFactory(
+    () => ChatGroupsBloc(sl<GetGroupsUseCase>(), sl<WatchChatGroupsUseCase>()),
+  );
   sl.registerFactory(() => CreateChatGroupBloc(sl<CreateChatGroupUseCase>()));
-  sl.registerFactory(() => GroupMessagesCubit(sl<GetMessagesByGroupUseCase>()));
+  sl.registerFactory(
+    () => GroupMessagesCubit(
+      sl<GetMessagesByGroupUseCase>(),
+      sl<WatchChatGroupMessagesUseCase>(),
+    ),
+  );
   sl.registerFactory(
     () => SendMessageToGroupCubit(sl<SendMessageToGroupUseCase>()),
   );
@@ -212,4 +226,9 @@ void setUpServiceLocator() {
   sl.registerLazySingleton(() => GetRouteUseCase(sl()));
   sl.registerLazySingleton<RouteRepository>(() => RouteRepositoryImpl(sl()));
   sl.registerLazySingleton(() => RouteRemoteDatasource());
+}
+
+void temporalClearMemoryDataSources() {
+  sl<IncidentInMemorySource>().clear();
+  sl<ChatInMemorySource>().clear();
 }

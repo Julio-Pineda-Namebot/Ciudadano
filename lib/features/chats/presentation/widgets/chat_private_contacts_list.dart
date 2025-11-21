@@ -1,5 +1,7 @@
+import "package:ciudadano/common/hooks/use_bloc_provider.dart";
 import "package:ciudadano/features/chats/domain/entity/chat_contact.dart";
 import "package:ciudadano/features/chats/presentation/bloc/contacts/chat_contacts_bloc.dart";
+import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:flutter_hooks_bloc/flutter_hooks_bloc.dart";
@@ -90,7 +92,12 @@ class ChatPrivateContactsList extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatContactsState = useBloc<ChatContactsBloc, ChatContactsState>();
+    final chatContactsBloc = useBlocProvider(
+      () => sl<ChatContactsBloc>()..add(const LoadChatContacts()),
+    );
+    final chatContactsState = useBloc<ChatContactsBloc, ChatContactsState>(
+      bloc: chatContactsBloc,
+    );
 
     return Skeletonizer(
       enabled:

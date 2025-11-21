@@ -7,9 +7,7 @@ import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_
 import "package:ciudadano/config/theme/app_theme.dart";
 import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
-import "package:ciudadano/features/chats/presentation/bloc/contacts/chat_contacts_bloc.dart";
-import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
-import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
+import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
 import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
@@ -143,18 +141,6 @@ class MyApp extends StatelessWidget {
               (context) => PresentationBloc()..add(CheckPresentationEvent()),
         ),
         BlocProvider(create: (context) => sl<LocationCubit>()),
-        // BlocProvider(
-        //   create:
-        //       (context) =>
-        //           sl<NearbyIncidentsBloc>()..add(LoadNearbyIncidents()),
-        // ),
-        BlocProvider(create: (context) => sl<ChatGroupsBloc>()),
-        BlocProvider(
-          create:
-              (context) =>
-                  sl<ChatContactsBloc>()..add(const LoadChatContacts()),
-        ),
-        BlocProvider(create: (context) => sl<GroupMessagesCubit>()),
         BlocProvider(
           create: (context) => sl<UserProfileBloc>()..add(FetchProfile()),
         ),

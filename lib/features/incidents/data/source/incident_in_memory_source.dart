@@ -20,4 +20,8 @@ class IncidentInMemorySource {
   void dispose() {
     _nearbyIncidentsSubject.close();
   }
+
+  void clear() {
+    _nearbyIncidentsSubject.add([]);
+  }
 }
