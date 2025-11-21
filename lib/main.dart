@@ -1,258 +1,122 @@
-import "dart:async";
-
-import "package:ciudadano/common/widgets/layouts/main/main_layout.dart";
-import "package:ciudadano/common/widgets/network/network_listener.dart";
-import "package:ciudadano/common/widgets/pages/presentation_screen/bloc/presentation_bloc.dart";
-import "package:ciudadano/common/widgets/pages/presentation_screen/presentation_screen_page.dart";
-import "package:ciudadano/config/theme/app_theme.dart";
-import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
-import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
-import "package:ciudadano/features/chats/presentation/bloc/contacts/chat_contacts_bloc.dart";
-import "package:ciudadano/features/chats/presentation/bloc/group_messages/group_messages_cubit.dart";
-import "package:ciudadano/features/chats/presentation/bloc/groups/chat_groups_bloc.dart";
-import "package:ciudadano/features/geolocalization/presentation/bloc/location_cubit.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_bloc.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/activity/activity_event.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_bloc.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/event/event_event.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_bloc.dart";
-import "package:ciudadano/features/home/comunity/presentation/bloc/surveillance/cam_event.dart";
-import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
-import "package:ciudadano/features/notifications/presentation/bloc/notification_event.dart";
-import "package:ciudadano/features/notifications/presentation/bloc/notification_state.dart";
-import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
-import "package:ciudadano/features/sidebar/profile/data/profile_remote_datasource.dart";
-import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_bloc.dart";
-import "package:ciudadano/features/sidebar/profile/presentation/bloc/user_profile_event.dart";
-import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
-import "package:ciudadano/service_locator.dart";
-import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
-import "package:flutter_bloc/flutter_bloc.dart";
-import "package:flutter_localizations/flutter_localizations.dart";
-import "package:flutter_secure_storage/flutter_secure_storage.dart";
-import "package:lottie/lottie.dart";
-import "package:splash_master/splash_master.dart";
 
-import "firebase_options.dart";
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Inicializar Firebase de forma más robusta
-  try {
-    if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-    } else {
-      // Si ya existe una app, la usamos
-      Firebase.app();
-    }
-  } on FirebaseException catch (e) {
-    if (e.code == "duplicate-app") {
-      // Firebase ya está inicializado desde otra fuente (native)
-      print("Firebase ya está inicializado desde configuración nativa");
-    } else {
-      print("Error inicializando Firebase: ${e.message}");
-      rethrow;
-    }
-  } catch (e) {
-    print("Error inesperado inicializando Firebase: $e");
-    rethrow;
-  }
-
-  SplashMaster.initialize();
-  setUpServiceLocator();
-  runApp(
-    const NetworkListener(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
-      ),
-    ),
-  );
-}
-
-class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // double screenWidth = MediaQuery.of(context).size.width;
-    // double screenHeight = MediaQuery.of(context).size.height;
-
-    return SplashMaster.lottie(
-      source: AssetSource("assets/lottie/splash_screen.json"),
-      lottieConfig: LottieConfig(
-        repeat: false,
-        animate: true,
-        width: 250,
-        aspectRatio: 1.0,
-        fit: BoxFit.contain,
-        overrideBoxFit: false,
-        alignment: Alignment.center,
-        frameRate: FrameRate.max,
-        errorBuilder: (context, error, stackTrace) {
-          return const Text("Error al cargar la animación");
-        },
-      ),
-      backGroundColor: Colors.black,
-      nextScreen: const MyApp(),
-    );
-  }
+void main() {
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  Future<bool> _isLoggedIn() async {
-    final secureStorage = sl<FlutterSecureStorage>();
-    final profileDatasource = ProfileRemoteDatasource();
-    final token = await secureStorage.read(key: "auth_token");
-
-    if (token == null || token.isEmpty) {
-      return false;
-    }
-
-    try {
-      await profileDatasource.getProfile();
-      return true;
-    } catch (e) {
-      return false;
-    }
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "Flutter Demo",
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      home: const MyHomePage(title: "Flutter Demo Home Page"),
+    );
   }
+}
 
-  Widget _buildMainLayoutWithTokenRegistration(BuildContext context) {
-    // Registrar el token automáticamente cuando el usuario está logueado
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      print("Usuario logueado - registrando token con backend");
-      context.read<NotificationBloc>().autoRegisterToken();
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
     });
-
-    return const MainLayout();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => sl<LogoutBloc>()),
-        BlocProvider(
-          create:
-              (context) => PresentationBloc()..add(CheckPresentationEvent()),
-        ),
-        BlocProvider(create: (context) => sl<LocationCubit>()),
-        // BlocProvider(
-        //   create:
-        //       (context) =>
-        //           sl<NearbyIncidentsBloc>()..add(LoadNearbyIncidents()),
-        // ),
-        BlocProvider(create: (context) => sl<ChatGroupsBloc>()),
-        BlocProvider(
-          create:
-              (context) =>
-                  sl<ChatContactsBloc>()..add(const LoadChatContacts()),
-        ),
-        BlocProvider(create: (context) => sl<GroupMessagesCubit>()),
-        BlocProvider(
-          create: (context) => sl<UserProfileBloc>()..add(FetchProfile()),
-        ),
-        BlocProvider(
-          create: (_) => sl<ActividadBloc>()..add(CargarActividades()),
-        ),
-        BlocProvider(create: (_) => sl<EventoBloc>()..add(CargarEventos())),
-        BlocProvider(create: (_) => sl<CamBloc>()..add(CargarCamaras())),
-        BlocProvider(create: (_) => sl<RouteBloc>()),
-        BlocProvider(
-          create: (_) {
-            final bloc = sl<NotificationBloc>();
-            // Agregar un pequeño delay para asegurar que Firebase esté completamente inicializado
-            Future.delayed(const Duration(milliseconds: 500), () {
-              print("Disparando InitializeNotifications event");
-              bloc.add(InitializeNotifications());
-            });
-            return bloc;
-          },
-        ),
-        BlocProvider(create: (_) => sl<AlertBloc>()),
-      ],
-      child: BlocListener<NotificationBloc, NotificationState>(
-        listener: (context, state) {
-          print("NotificationBloc state changed: ${state.runtimeType}");
-          if (state is NotificationInitial) {
-            print("Notificación inicial");
-          } else if (state is NotificationLoading) {
-            print("Notificaciones cargando...");
-          } else if (state is NotificationInitialized) {
-            print("Notificaciones inicializadas exitosamente");
-            print("Permisos: ${state.permissionsGranted}");
-            print("Token: ${state.firebaseToken}");
-
-            // Si no hay permisos, solicitarlos automáticamente
-            if (!state.permissionsGranted) {
-              print("Solicitando permisos de notificación...");
-              context.read<NotificationBloc>().add(
-                RequestNotificationPermissions(),
-              );
-            }
-          } else if (state is NotificationError) {
-            print("Error en notificaciones: ${state.message}");
-          } else if (state is NotificationPermissionGranted) {
-            print("Permisos de notificación concedidos!");
-          } else if (state is NotificationPermissionDenied) {
-            print("Permisos de notificación denegados");
-          } else if (state is NotificationTokenRegistered) {
-            print("🎉 Token registrado exitosamente con el backend!");
-            print("Token: ${state.token.substring(0, 20)}...");
-          }
-        },
-        child: NetworkListener(
-          child: MaterialApp(
-            title: "Ciudadano",
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.appTheme,
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale("es"), Locale("en")],
-            locale: const Locale("es"),
-            home: BlocBuilder<PresentationBloc, PresentationState>(
-              builder: (context, state) {
-                return AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 500),
-                  child:
-                      state is PresentationNotSeen
-                          ? const PresentationScreenPage()
-                          : FutureBuilder(
-                            future: _isLoggedIn(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return const Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-
-                              if (snapshot.hasError) {
-                                return const LoginPage();
-                              }
-
-                              return snapshot.data!
-                                  ? _buildMainLayoutWithTokenRegistration(
-                                    context,
-                                  )
-                                  : const LoginPage();
-                            },
-                          ),
-                );
-              },
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text("You have pushed the button this many times:"),
+            Text(
+              "$_counter",
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-          ),
+          ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: "Increment",
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

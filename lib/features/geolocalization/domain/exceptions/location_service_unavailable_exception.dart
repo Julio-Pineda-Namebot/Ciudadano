@@ -1,1 +1,0 @@
-class LocationServiceUnavailableException implements Exception {}
