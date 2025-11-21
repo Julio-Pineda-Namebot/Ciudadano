@@ -1,4 +1,6 @@
 import "dart:async";
+import "package:ciudadano/features/incidents/domain/entities/incident.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_bloc.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/bloc/route_event.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/widgets/animated_menu.dart";
@@ -40,6 +42,15 @@ class _SafeRoutePageState extends State<SafeRoutePage>
     _slideAnimation = Tween<double>(begin: -1.0, end: 0.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
+
+    // Cargar incidencias cercanas
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (currentLocation != null) {
+        context.read<NearbyIncidentsBloc>().add(
+          LoadNearbyIncidents(currentLocation!),
+        );
+      }
+    });
   }
 
   @override
@@ -54,6 +65,13 @@ class _SafeRoutePageState extends State<SafeRoutePage>
     setState(() {
       currentLocation = LatLng(pos.latitude, pos.longitude);
     });
+
+    // Cargar incidencias cercanas cuando se obtiene la ubicación
+    if (mounted) {
+      context.read<NearbyIncidentsBloc>().add(
+        LoadNearbyIncidents(currentLocation!),
+      );
+    }
   }
 
   void _onTapMap(LatLng latlng) {
@@ -62,14 +80,22 @@ class _SafeRoutePageState extends State<SafeRoutePage>
     });
 
     if (currentLocation != null && destination != null) {
+      // Obtener las incidencias del estado actual
+      final nearbyIncidentsState = context.read<NearbyIncidentsBloc>().state;
+      final List<Incident> incidents =
+          nearbyIncidentsState is NearbyIncidentsLoaded
+              ? nearbyIncidentsState.incidents
+              : [];
+
       context.read<RouteBloc>().add(
-            LoadRouteEvent(
-              currentLocation!.latitude,
-              currentLocation!.longitude,
-              destination!.latitude,
-              destination!.longitude,
-            ),
-          );
+        LoadRouteEvent(
+          currentLocation!.latitude,
+          currentLocation!.longitude,
+          destination!.latitude,
+          destination!.longitude,
+          incidents,
+        ),
+      );
     }
   }
 
@@ -97,32 +123,34 @@ class _SafeRoutePageState extends State<SafeRoutePage>
   void _cancelRoute() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("¿Cancelar ruta?"),
-        content:
-            const Text("¿Estás seguro de que deseas cancelar el recorrido actual?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("No"),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("¿Cancelar ruta?"),
+            content: const Text(
+              "¿Estás seguro de que deseas cancelar el recorrido actual?",
             ),
-            onPressed: () {
-              _timer?.cancel();
-              setState(() {
-                _elapsedTime = Duration.zero;
-                destination = null;
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Sí, cancelar"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text("No"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () {
+                  _timer?.cancel();
+                  setState(() {
+                    _elapsedTime = Duration.zero;
+                    destination = null;
+                  });
+                  Navigator.pop(context);
+                },
+                child: const Text("Sí, cancelar"),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -162,13 +190,24 @@ class _SafeRoutePageState extends State<SafeRoutePage>
             onCancel: _cancelRoute,
           ),
           Expanded(
-            child: currentLocation == null
-                ? const Center(child: CircularProgressIndicator())
-                : SafeMap(
-                    currentLocation: currentLocation!,
-                    destination: destination,
-                    onTapMap: _onTapMap,
-                  ),
+            child:
+                currentLocation == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : BlocBuilder<NearbyIncidentsBloc, NearbyIncidentsState>(
+                      builder: (context, nearbyIncidentsState) {
+                        final incidents =
+                            nearbyIncidentsState is NearbyIncidentsLoaded
+                                ? nearbyIncidentsState.incidents
+                                : <Incident>[];
+
+                        return SafeMap(
+                          currentLocation: currentLocation!,
+                          destination: destination,
+                          incidents: incidents,
+                          onTapMap: _onTapMap,
+                        );
+                      },
+                    ),
           ),
         ],
       ),

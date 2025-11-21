@@ -1,8 +1,10 @@
+import "package:ciudadano/features/incidents/presentation/bloc/nearby_incidents/nearby_incidents_bloc.dart";
 import "package:ciudadano/features/sidebar/about/about_page.dart";
 import "package:ciudadano/features/sidebar/news/presentation/page/news_page.dart";
 import "package:ciudadano/features/sidebar/profile/presentation/pages/user_profile_page.dart";
 import "package:ciudadano/features/sidebar/logout/bloc/logout_bloc.dart";
 import "package:ciudadano/features/sidebar/safe_route/presentation/pages/safe_route_page.dart";
+import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:sidebarx/sidebarx.dart";
@@ -43,7 +45,13 @@ class SidebarMenu extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const SafeRoutePage()),
+              MaterialPageRoute(
+                builder:
+                    (context) => BlocProvider(
+                      create: (context) => sl<NearbyIncidentsBloc>(),
+                      child: const SafeRoutePage(),
+                    ),
+              ),
             ).then((_) => controller.selectIndex(-1));
           },
         ),
