@@ -2,8 +2,8 @@ import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
 import "package:flutter/material.dart";
 import "package:provider/provider.dart";
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {

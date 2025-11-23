@@ -1,4 +1,4 @@
-import "package:ciudadano/features/app_shell/presentation/pages/MY_app.dart";
+import "package:ciudadano/features/app_shell/presentation/pages/home_page.dart";
 import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
 import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
@@ -25,7 +25,7 @@ class RedirectLoginPage extends StatelessWidget {
     if (state is AuthenticatedState) {
       return Provider<AuthProfile>(
         create: (context) => state.authProfile,
-        child: const MyApp(),
+        child: const HomePage(),
       );
     }
 

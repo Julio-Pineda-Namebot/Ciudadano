@@ -1,7 +1,7 @@
-import "package:ciudadano/features/app_shell/presentation/pages/MY_app.dart";
+import "package:ciudadano/features/app_shell/presentation/pages/present/redirect_presentation_screen_page.dart";
 import "package:flutter/material.dart";
-import "package:splash_master/splash_master.dart";
 import "package:lottie/lottie.dart";
+import "package:splash_master/splash_master.dart";
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -24,7 +24,28 @@ class SplashPage extends StatelessWidget {
         },
       ),
       backGroundColor: Colors.black,
-      nextScreen: const MyApp(),
+      customNavigation:
+          () => Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              transitionDuration: const Duration(milliseconds: 300),
+              pageBuilder:
+                  (_, __, ___) => const RedirectPresentationScreenPage(),
+              transitionsBuilder: (_, animation, __, child) {
+                final curved = CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutBack,
+                );
+
+                return FadeTransition(
+                  opacity: animation,
+                  child: Transform.scale(
+                    scale: 0.9 + (curved.value * 0.1),
+                    child: child,
+                  ),
+                );
+              },
+            ),
+          ),
     );
   }
 }

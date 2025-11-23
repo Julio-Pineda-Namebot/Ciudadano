@@ -1,5 +1,4 @@
 import "package:ciudadano/features/app_shell/presentation/bloc/presentation_cubit.dart";
-import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:introduction_screen/introduction_screen.dart";
