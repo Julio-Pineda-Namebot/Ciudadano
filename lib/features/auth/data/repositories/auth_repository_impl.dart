@@ -68,4 +68,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     return result.fold((l) => null, (authProfile) => authProfile);
   }
+
+  @override
+  Future<void> logout() async {
+    await _secureStorageSource.deleteToken();
+    sl<AuthInterceptor>().clearToken();
+  }
 }

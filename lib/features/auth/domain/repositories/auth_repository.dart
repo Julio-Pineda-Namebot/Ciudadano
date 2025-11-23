@@ -19,4 +19,6 @@ abstract class AuthRepository {
   Future<Either<String, String>> sendResetPasswordEmail(String email);
 
   Future<AuthProfile?> getProfileIfUserIsAuthenticated();
+
+  Future<void> logout();
 }

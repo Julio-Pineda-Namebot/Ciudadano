@@ -31,6 +31,7 @@ dependencies:
   flutter_login: ^6.0.0
   dartz: ^0.10.1
   provider: ^6.1.5+1
+  sidebarx: ^0.17.2
 
 dev_dependencies:
   flutter_test:

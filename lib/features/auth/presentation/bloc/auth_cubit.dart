@@ -1,5 +1,6 @@
 import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_get_profile_if_authenticated.dart";
+import "package:ciudadano/features/auth/domain/usecases/auth_logout_use_case.dart";
 import "package:equatable/equatable.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 
@@ -32,8 +33,10 @@ class AuthenticatedState extends AuthState {
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthGetProfileIfAuthenticated _getProfileIfAuthenticated;
+  final AuthLogoutUseCase _logoutUseCase;
 
-  AuthCubit(this._getProfileIfAuthenticated) : super(const AuthLoadingState());
+  AuthCubit(this._getProfileIfAuthenticated, this._logoutUseCase)
+    : super(const AuthLoadingState());
 
   void checkAuthentication() async {
     emit(const AuthLoadingState());
@@ -45,5 +48,10 @@ class AuthCubit extends Cubit<AuthState> {
     } else {
       emit(const UnauthenticatedState());
     }
+  }
+
+  Future<void> logout() async {
+    await _logoutUseCase();
+    emit(const UnauthenticatedState());
   }
 }

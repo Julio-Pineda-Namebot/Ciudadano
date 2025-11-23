@@ -1,4 +1,4 @@
-import "package:ciudadano/features/app_shell/presentation/pages/home_page.dart";
+import "package:ciudadano/features/app_shell/presentation/pages/navigation/main_navigation.dart";
 import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
 import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
@@ -12,10 +12,7 @@ class RedirectLoginPage extends StatelessWidget {
 
   Widget _buildStateWidget(AuthState state) {
     if (state is AuthLoadingState) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
-      );
+      return const Scaffold(backgroundColor: Colors.black);
     }
 
     if (state is UnauthenticatedState) {
@@ -25,7 +22,7 @@ class RedirectLoginPage extends StatelessWidget {
     if (state is AuthenticatedState) {
       return Provider<AuthProfile>(
         create: (context) => state.authProfile,
-        child: const HomePage(),
+        child: const MainNavigation(),
       );
     }
 

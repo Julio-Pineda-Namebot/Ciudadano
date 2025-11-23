@@ -8,8 +8,10 @@ import "package:ciudadano/features/auth/domain/usecases/auth_resend_verification
 import "package:ciudadano/features/auth/domain/usecases/auth_reset_password_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_send_reset_password_email_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_verify_email_use_case.dart";
+import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_login/flutter_login.dart";
 
 class LoginPage extends StatelessWidget {
@@ -254,6 +256,8 @@ class LoginPage extends StatelessWidget {
           },
         ),
       ],
+      onSubmitAnimationCompleted:
+          () => BlocProvider.of<AuthCubit>(context).checkAuthentication(),
     );
   }
 }

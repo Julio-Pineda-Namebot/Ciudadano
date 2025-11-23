@@ -8,6 +8,7 @@ import "package:ciudadano/features/auth/data/sources/auth_secure_storage_source.
 import "package:ciudadano/features/auth/domain/repositories/auth_repository.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_get_profile_if_authenticated.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_login_use_case.dart";
+import "package:ciudadano/features/auth/domain/usecases/auth_logout_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_register_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_resend_verification_email_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_reset_password_use_case.dart";
@@ -49,8 +50,9 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton(AuthResendVerificationEmailUseCase(sl()));
   sl.registerSingleton(AuthVerifyEmailUseCase(sl()));
   sl.registerSingleton(AuthGetProfileIfAuthenticated(sl()));
+  sl.registerSingleton(AuthLogoutUseCase(sl()));
 
   // Blocs / Cubits
   sl.registerFactory(() => PresentationCubit());
-  sl.registerFactory(() => AuthCubit(sl()));
+  sl.registerFactory(() => AuthCubit(sl(), sl()));
 }
