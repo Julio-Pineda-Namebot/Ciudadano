@@ -1,19 +1,15 @@
-import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
+import "package:ciudadano/features/incidents/presentation/widgets/nearby_incidents_map.dart";
 import "package:flutter/material.dart";
-import "package:provider/provider.dart";
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final name = context.read<AuthProfile>().firstName;
-
-    return Scaffold(
-      body: Center(
+    return const SafeArea(
+      child: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [const Text("My App Home Page"), Text(name)],
+          children: [SizedBox(height: 400, child: NearbyIncidentsMap())],
         ),
       ),
     );

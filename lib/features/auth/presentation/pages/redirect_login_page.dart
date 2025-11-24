@@ -2,6 +2,7 @@ import "package:ciudadano/features/app_shell/presentation/pages/navigation/main_
 import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
 import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
+import "package:ciudadano/features/geolocalization/presentation/widgets/geolocalization_ask_permission.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
@@ -22,7 +23,7 @@ class RedirectLoginPage extends StatelessWidget {
     if (state is AuthenticatedState) {
       return Provider<AuthProfile>(
         create: (context) => state.authProfile,
-        child: const MainNavigation(),
+        child: const GeolocalizationAskPermission(child: MainNavigation()),
       );
     }
 

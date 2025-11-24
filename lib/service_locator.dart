@@ -15,6 +15,14 @@ import "package:ciudadano/features/auth/domain/usecases/auth_reset_password_use_
 import "package:ciudadano/features/auth/domain/usecases/auth_send_reset_password_email_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_verify_email_use_case.dart";
 import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
+import "package:ciudadano/features/geolocalization/data/repositories/geolocalization_repository_impl.dart";
+import "package:ciudadano/features/geolocalization/data/sources/geolocator_source.dart";
+import "package:ciudadano/features/geolocalization/domain/repositories/geolocalization_repository.dart";
+import "package:ciudadano/features/geolocalization/domain/usecases/check_geolocalization_permission_status_use_case.dart";
+import "package:ciudadano/features/geolocalization/domain/usecases/request_geolocalization_permission_use_case.dart";
+import "package:ciudadano/features/geolocalization/domain/usecases/watch_current_location_use_case.dart";
+import "package:ciudadano/features/geolocalization/presentation/bloc/geolocalization_permission_cubit.dart";
+import "package:ciudadano/features/geolocalization/presentation/bloc/get_location_cubit.dart";
 import "package:get_it/get_it.dart";
 import "package:logger/logger.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -36,13 +44,18 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton(DioClient());
 
   // Repositories
+  //// Auth
   sl.registerSingleton(AuthApiSource(sl()));
   sl.registerSingleton(AuthSecureStorageSource(sl()));
   sl.registerSingleton<AuthRepository>(AuthRepositoryImpl(sl(), sl()));
+  //// Geolocalization
+  sl.registerSingleton(GeolocatorSource());
+  sl.registerSingleton<GeolocalizationRepository>(
+    GeolocalizationRepositoryImpl(sl()),
+  );
 
   // Use Cases
-
-  // Auth
+  //// Auth
   sl.registerSingleton(AuthRegisterUseCase(sl()));
   sl.registerSingleton(AuthLoginUseCase(sl()));
   sl.registerSingleton(AuthResetPasswordUseCase(sl()));
@@ -51,8 +64,16 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton(AuthVerifyEmailUseCase(sl()));
   sl.registerSingleton(AuthGetProfileIfAuthenticated(sl()));
   sl.registerSingleton(AuthLogoutUseCase(sl()));
+  //// Geolocalization
+  sl.registerSingleton(RequestGeolocalizationPermissionUseCase(sl()));
+  sl.registerSingleton(CheckGeolocalizationPermissionStatusUseCase(sl()));
+  sl.registerSingleton(WatchCurrentLocationUseCase(sl()));
 
   // Blocs / Cubits
   sl.registerFactory(() => PresentationCubit());
+  //// Auth
   sl.registerFactory(() => AuthCubit(sl(), sl()));
+  //// Geolocalization
+  sl.registerFactory(() => GeolocalizationPermissionCubit(sl(), sl()));
+  sl.registerFactory(() => GetLocationCubit(sl()));
 }

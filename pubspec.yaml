@@ -32,6 +32,11 @@ dependencies:
   dartz: ^0.10.1
   provider: ^6.1.5+1
   sidebarx: ^0.17.2
+  mapbox_maps_flutter: ^2.12.0
+  flutter_dotenv: ^6.0.0
+  permission_handler: ^12.0.1
+  geolocator: ^14.0.2
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:
@@ -43,6 +48,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/
     - assets/lottie/
     - assets/data/
