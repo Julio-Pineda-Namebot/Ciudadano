@@ -23,6 +23,13 @@ import "package:ciudadano/features/geolocalization/domain/usecases/request_geolo
 import "package:ciudadano/features/geolocalization/domain/usecases/watch_current_location_use_case.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/geolocalization_permission_cubit.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/get_location_cubit.dart";
+import "package:ciudadano/features/incidents/data/repositories/incident_repository_impl.dart";
+import "package:ciudadano/features/incidents/data/sources/incident_api_source.dart";
+import "package:ciudadano/features/incidents/data/sources/incident_in_memory_stream_source.dart";
+import "package:ciudadano/features/incidents/domain/repositories/incident_repository.dart";
+import "package:ciudadano/features/incidents/domain/usecases/get_nearby_incidents_use_case.dart";
+import "package:ciudadano/features/incidents/domain/usecases/watch_nearby_incidents_use_case.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_bloc.dart";
 import "package:get_it/get_it.dart";
 import "package:logger/logger.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -53,6 +60,10 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton<GeolocalizationRepository>(
     GeolocalizationRepositoryImpl(sl()),
   );
+  //// Incidents
+  sl.registerSingleton(IncidentApiSource(sl()));
+  sl.registerSingleton(IncidentInMemoryStreamSource());
+  sl.registerSingleton<IncidentRepository>(IncidentRepositoryImpl(sl(), sl()));
 
   // Use Cases
   //// Auth
@@ -68,6 +79,9 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton(RequestGeolocalizationPermissionUseCase(sl()));
   sl.registerSingleton(CheckGeolocalizationPermissionStatusUseCase(sl()));
   sl.registerSingleton(WatchCurrentLocationUseCase(sl()));
+  //// Incidents
+  sl.registerSingleton(GetNearbyIncidentsUseCase(sl()));
+  sl.registerSingleton(WatchNearbyIncidentsUseCase(sl()));
 
   // Blocs / Cubits
   sl.registerFactory(() => PresentationCubit());
@@ -76,4 +90,6 @@ Future<void> setUpServiceLocator() async {
   //// Geolocalization
   sl.registerFactory(() => GeolocalizationPermissionCubit(sl(), sl()));
   sl.registerFactory(() => GetLocationCubit(sl()));
+  //// Incidents
+  sl.registerFactory(() => GetNearbyIncidentsBloc(sl(), sl()));
 }

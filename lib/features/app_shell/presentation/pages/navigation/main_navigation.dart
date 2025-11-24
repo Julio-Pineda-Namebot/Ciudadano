@@ -18,10 +18,9 @@ class MainNavigation extends HookWidget {
     final currentNavigationBarIndex = useState(0);
     final geolocalizationPermissionCubit =
         BlocProvider.of<GeolocalizationPermissionCubit>(context);
-    final geolocalizationPermissionState = useBlocBuilder<
-      GeolocalizationPermissionCubit,
-      GeolocalizationPermissionState
-    >(geolocalizationPermissionCubit);
+    final geolocalizationPermissionState = useBlocBuilder(
+      geolocalizationPermissionCubit,
+    );
 
     final isLocationGranted =
         geolocalizationPermissionState.status == LocationStatus.granted;
