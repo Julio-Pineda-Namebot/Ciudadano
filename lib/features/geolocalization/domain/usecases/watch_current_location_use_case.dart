@@ -2,11 +2,11 @@ import "package:ciudadano/features/geolocalization/domain/repositories/geolocali
 import "package:latlong2/latlong.dart";
 
 class WatchCurrentLocationUseCase {
-  final GeolocalizationRepository repository;
+  final GeolocalizationRepository _repository;
 
-  const WatchCurrentLocationUseCase(this.repository);
+  const WatchCurrentLocationUseCase(this._repository);
 
   Stream<LatLng> call() {
-    return repository.watchCurrentLocation();
+    return _repository.watchCurrentLocation();
   }
 }

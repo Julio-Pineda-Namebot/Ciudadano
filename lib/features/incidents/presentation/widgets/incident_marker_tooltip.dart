@@ -25,7 +25,7 @@ class IncidentMarkerTooltip extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            incident.type.displayName,
+            incident.type.value,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,

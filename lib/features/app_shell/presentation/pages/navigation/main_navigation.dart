@@ -5,6 +5,7 @@ import "package:ciudadano/features/app_shell/presentation/widgets/navigation/app
 import "package:ciudadano/features/geolocalization/presentation/widgets/location_permission_required_view.dart";
 import "package:ciudadano/features/geolocalization/domain/entities/location_status.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/geolocalization_permission_cubit.dart";
+import "package:ciudadano/features/incidents/presentation/pages/report_incident_page.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
@@ -32,11 +33,14 @@ class MainNavigation extends HookWidget {
           isLocationGranted
               ? IndexedStack(
                 index: currentNavigationBarIndex.value,
-                children: const [
-                  HomePage(),
-                  Center(child: Text("Search Page")),
-                  Center(child: Text("Reports Page")),
-                  Center(child: Text("Profile Page")),
+                children: [
+                  const HomePage(),
+                  ReportIncidentPage(
+                    onReportIncident:
+                        (incident) => currentNavigationBarIndex.value = 0,
+                  ),
+                  const Center(child: Text("Reports Page")),
+                  const Center(child: Text("Profile Page")),
                 ],
               )
               : const LocationPermissionRequiredView(),

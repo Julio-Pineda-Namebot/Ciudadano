@@ -28,8 +28,10 @@ import "package:ciudadano/features/incidents/data/sources/incident_api_source.da
 import "package:ciudadano/features/incidents/data/sources/incident_in_memory_stream_source.dart";
 import "package:ciudadano/features/incidents/domain/repositories/incident_repository.dart";
 import "package:ciudadano/features/incidents/domain/usecases/get_nearby_incidents_use_case.dart";
+import "package:ciudadano/features/incidents/domain/usecases/report_incident_use_case.dart";
 import "package:ciudadano/features/incidents/domain/usecases/watch_nearby_incidents_use_case.dart";
-import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_bloc.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_cubit.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/report_incident_cubit.dart";
 import "package:get_it/get_it.dart";
 import "package:logger/logger.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -82,6 +84,7 @@ Future<void> setUpServiceLocator() async {
   //// Incidents
   sl.registerSingleton(GetNearbyIncidentsUseCase(sl()));
   sl.registerSingleton(WatchNearbyIncidentsUseCase(sl()));
+  sl.registerSingleton(ReportIncidentUseCase(sl()));
 
   // Blocs / Cubits
   sl.registerFactory(() => PresentationCubit());
@@ -91,5 +94,6 @@ Future<void> setUpServiceLocator() async {
   sl.registerFactory(() => GeolocalizationPermissionCubit(sl(), sl()));
   sl.registerFactory(() => GetLocationCubit(sl()));
   //// Incidents
-  sl.registerFactory(() => GetNearbyIncidentsBloc(sl(), sl()));
+  sl.registerFactory(() => GetNearbyIncidentsCubit(sl(), sl()));
+  sl.registerFactory(() => ReportIncidentCubit(sl()));
 }

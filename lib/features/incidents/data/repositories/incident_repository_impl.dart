@@ -1,6 +1,7 @@
 import "package:ciudadano/features/incidents/data/sources/incident_api_source.dart";
 import "package:ciudadano/features/incidents/data/sources/incident_in_memory_stream_source.dart";
 import "package:ciudadano/features/incidents/domain/entity/incident.dart";
+import "package:ciudadano/features/incidents/domain/params/report_incident_param.dart";
 import "package:ciudadano/features/incidents/domain/repositories/incident_repository.dart";
 import "package:dartz/dartz.dart";
 import "package:latlong2/latlong.dart";
@@ -20,14 +21,11 @@ class IncidentRepositoryImpl implements IncidentRepository {
         .then(
           (either) => either.fold(
             (message) {
-              _inMemoryStreamSource.throwErrorNearbyIncidents(
-                location,
-                message,
-              );
+              _inMemoryStreamSource.throwErrorNearbyIncidents(message);
               return Left(message);
             },
             (incidents) {
-              _inMemoryStreamSource.updateNearbyIncidents(incidents, location);
+              _inMemoryStreamSource.updateNearbyIncidents(incidents);
               return Right(incidents);
             },
           ),
@@ -36,10 +34,24 @@ class IncidentRepositoryImpl implements IncidentRepository {
 
   @override
   Stream<List<Incident>> watchNearbyIncidents(LatLng location) {
-    if (_inMemoryStreamSource.getCurrentNearbyIncidents(location) == null) {
+    if (_inMemoryStreamSource.currentNearbyIncidents == null) {
       getNearbyIncidents(location);
     }
 
-    return _inMemoryStreamSource.getNearbyIncidentsStream(location);
+    return _inMemoryStreamSource.nearbyIncidentsStream;
+  }
+
+  @override
+  Future<Either<String, Incident>> reportIncident(
+    ReportIncidentParam reportIncidentParam,
+  ) {
+    return _apiSource
+        .reportIncident(reportIncidentParam)
+        .then(
+          (either) => either.fold((message) => Left(message), (incident) {
+            _inMemoryStreamSource.addNearbyIncident(incident);
+            return Right(incident);
+          }),
+        );
   }
 }

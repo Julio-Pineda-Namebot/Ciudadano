@@ -3,11 +3,11 @@ import "package:ciudadano/features/incidents/domain/repositories/incident_reposi
 import "package:latlong2/latlong.dart";
 
 class WatchNearbyIncidentsUseCase {
-  final IncidentRepository repository;
+  final IncidentRepository _repository;
 
-  WatchNearbyIncidentsUseCase(this.repository);
+  WatchNearbyIncidentsUseCase(this._repository);
 
   Stream<List<Incident>> call(LatLng location) {
-    return repository.watchNearbyIncidents(location);
+    return _repository.watchNearbyIncidents(location);
   }
 }

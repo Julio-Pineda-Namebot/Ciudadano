@@ -30,13 +30,13 @@ class GetNearbyIncidentsErrorState extends GetNearbyIncidentsState {
   List<Object?> get props => [message];
 }
 
-class GetNearbyIncidentsBloc extends Cubit<GetNearbyIncidentsState> {
+class GetNearbyIncidentsCubit extends Cubit<GetNearbyIncidentsState> {
   final GetNearbyIncidentsUseCase _getNearbyIncidentsUseCase;
   final WatchNearbyIncidentsUseCase _watchNearbyIncidentsUseCase;
 
   StreamSubscription<List<Incident>>? _incidentsSubscription;
 
-  GetNearbyIncidentsBloc(
+  GetNearbyIncidentsCubit(
     this._getNearbyIncidentsUseCase,
     this._watchNearbyIncidentsUseCase,
   ) : super(GetNearbyIncidentsLoadingState());

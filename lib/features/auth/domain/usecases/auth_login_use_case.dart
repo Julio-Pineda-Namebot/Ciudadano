@@ -3,11 +3,11 @@ import "package:ciudadano/features/auth/domain/repositories/auth_repository.dart
 import "package:dartz/dartz.dart";
 
 class AuthLoginUseCase {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  const AuthLoginUseCase(this.repository);
+  const AuthLoginUseCase(this._repository);
 
   Future<Either<String, String>> call(AuthLoginParams params) {
-    return repository.login(params);
+    return _repository.login(params);
   }
 }

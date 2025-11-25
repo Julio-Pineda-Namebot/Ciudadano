@@ -6,8 +6,8 @@ enum IncidentType {
   accident("Accidente"),
   vandalism("Vandalismo");
 
-  final String displayName;
-  const IncidentType(this.displayName);
+  final String value;
+  const IncidentType(this.value);
 }
 
 class Incident extends Equatable {

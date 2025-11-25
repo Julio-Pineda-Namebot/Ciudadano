@@ -2,11 +2,11 @@ import "package:ciudadano/features/geolocalization/domain/entities/location_stat
 import "package:ciudadano/features/geolocalization/domain/repositories/geolocalization_repository.dart";
 
 class CheckGeolocalizationPermissionStatusUseCase {
-  final GeolocalizationRepository repository;
+  final GeolocalizationRepository _repository;
 
-  CheckGeolocalizationPermissionStatusUseCase(this.repository);
+  CheckGeolocalizationPermissionStatusUseCase(this._repository);
 
   Future<LocationStatus> call() async {
-    return await repository.checkStatus();
+    return await _repository.checkStatus();
   }
 }

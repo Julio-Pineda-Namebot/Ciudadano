@@ -4,11 +4,11 @@ import "package:dartz/dartz.dart";
 import "package:latlong2/latlong.dart";
 
 class GetNearbyIncidentsUseCase {
-  final IncidentRepository repository;
+  final IncidentRepository _repository;
 
-  GetNearbyIncidentsUseCase(this.repository);
+  GetNearbyIncidentsUseCase(this._repository);
 
   Future<Either<String, List<Incident>>> call(LatLng location) {
-    return repository.getNearbyIncidents(location);
+    return _repository.getNearbyIncidents(location);
   }
 }

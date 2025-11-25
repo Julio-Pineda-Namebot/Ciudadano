@@ -3,11 +3,11 @@ import "package:ciudadano/features/auth/domain/repositories/auth_repository.dart
 import "package:dartz/dartz.dart";
 
 class AuthVerifyEmailUseCase {
-  final AuthRepository repository;
+  final AuthRepository _repository;
 
-  const AuthVerifyEmailUseCase(this.repository);
+  const AuthVerifyEmailUseCase(this._repository);
 
   Future<Either<String, String>> call(AuthVerifyEmailParams params) {
-    return repository.verifyEmail(params);
+    return _repository.verifyEmail(params);
   }
 }

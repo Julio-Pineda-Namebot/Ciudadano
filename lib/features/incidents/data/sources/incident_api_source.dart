@@ -1,6 +1,7 @@
 import "package:ciudadano/core/api/dio_client.dart";
 import "package:ciudadano/features/incidents/data/models/incident_model.dart";
 import "package:ciudadano/features/incidents/domain/entity/incident.dart";
+import "package:ciudadano/features/incidents/domain/params/report_incident_param.dart";
 import "package:dartz/dartz.dart";
 import "package:dio/dio.dart";
 import "package:latlong2/latlong.dart";
@@ -30,7 +31,35 @@ class IncidentApiSource {
             .toList(),
       );
     } on DioException catch (e) {
-      return Left(e.message ?? "Error al obtener incidentes cercanos");
+      return Left(
+        e.response?.data["message"] ?? "Error al obtener incidentes cercanos",
+      );
+    }
+  }
+
+  Future<Either<String, Incident>> reportIncident(
+    ReportIncidentParam reportIncidentParam,
+  ) async {
+    try {
+      final response = await _dio.post(
+        "/incidents/report",
+        data: FormData.fromMap({
+          "description": reportIncidentParam.description,
+          "incident_type": reportIncidentParam.incidentType.value.toLowerCase(),
+          "multimedia": await MultipartFile.fromFile(
+            reportIncidentParam.image.path,
+            filename: reportIncidentParam.image.path.split("/").last,
+          ),
+          "latitude": reportIncidentParam.location.latitude,
+          "longitude": reportIncidentParam.location.longitude,
+        }),
+      );
+
+      return Right(IncidentModel.fromJson(response.data["data"]));
+    } on DioException catch (e) {
+      return Left(
+        e.response?.data["message"] ?? "Error al reportar el incidente",
+      );
     }
   }
 }

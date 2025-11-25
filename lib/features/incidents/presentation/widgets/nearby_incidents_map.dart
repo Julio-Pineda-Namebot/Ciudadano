@@ -4,13 +4,12 @@ import "dart:ui";
 import "package:ciudadano/features/app_shell/presentation/hooks/use_bloc_provider.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/get_location_cubit.dart";
 import "package:ciudadano/features/incidents/domain/entity/incident.dart";
-import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_bloc.dart";
+import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/incident_marker_tooltip.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
-import "package:font_awesome_flutter/font_awesome_flutter.dart";
 import "package:hooked_bloc/hooked_bloc.dart";
 import "package:latlong2/latlong.dart";
 import "package:mapbox_maps_flutter/mapbox_maps_flutter.dart";
@@ -154,7 +153,8 @@ class _NearbyIncidentsMapLoaded extends HookWidget {
     final screenPosition = useState<Offset?>(null);
 
     final getNearbyIncidentsCubit = useBlocProvider(
-      () => sl<GetNearbyIncidentsBloc>()..loadNearbyIncidents(locationMemoized),
+      () =>
+          sl<GetNearbyIncidentsCubit>()..loadNearbyIncidents(locationMemoized),
     );
     final nearbyIncidentsState = useBlocBuilder(getNearbyIncidentsCubit);
 
