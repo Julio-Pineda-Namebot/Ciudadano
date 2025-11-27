@@ -6,8 +6,8 @@ import "package:flutter_hooks/flutter_hooks.dart";
 import "package:geolocator/geolocator.dart";
 import "package:hooked_bloc/hooked_bloc.dart";
 
-class LocationPermissionRequiredView extends HookWidget {
-  const LocationPermissionRequiredView({super.key});
+class LocationPermissionRequiredPage extends HookWidget {
+  const LocationPermissionRequiredPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,20 +15,22 @@ class LocationPermissionRequiredView extends HookWidget {
       BlocProvider.of<GeolocalizationPermissionCubit>(context),
     );
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildIcon(state.status),
-            const SizedBox(height: 24),
-            _buildTitle(state.status),
-            const SizedBox(height: 16),
-            _buildDescription(state.status),
-            const SizedBox(height: 32),
-            _buildActionButton(context, state.status),
-          ],
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildIcon(state.status),
+              const SizedBox(height: 24),
+              _buildTitle(state.status),
+              const SizedBox(height: 16),
+              _buildDescription(state.status),
+              const SizedBox(height: 32),
+              _buildActionButton(context, state.status),
+            ],
+          ),
         ),
       ),
     );

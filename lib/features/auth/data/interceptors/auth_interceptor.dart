@@ -20,4 +20,6 @@ class AuthInterceptor extends Interceptor {
   void clearToken() {
     _token = null;
   }
+
+  String? get token => _token;
 }

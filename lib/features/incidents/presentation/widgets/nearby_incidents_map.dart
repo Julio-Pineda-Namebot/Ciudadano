@@ -1,8 +1,9 @@
 import "dart:typed_data";
 import "dart:ui";
 
+import "package:ciudadano/core/log/pr.dart";
 import "package:ciudadano/features/app_shell/presentation/hooks/use_bloc_provider.dart";
-import "package:ciudadano/features/geolocalization/presentation/bloc/get_location_cubit.dart";
+import "package:ciudadano/features/geolocalization/presentation/widgets/geolocalization_provider.dart";
 import "package:ciudadano/features/incidents/domain/entity/incident.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/incident_marker_tooltip.dart";
@@ -11,30 +12,10 @@ import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:hooked_bloc/hooked_bloc.dart";
-import "package:latlong2/latlong.dart";
 import "package:mapbox_maps_flutter/mapbox_maps_flutter.dart";
 
 class NearbyIncidentsMap extends HookWidget {
   const NearbyIncidentsMap({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final locationState = useBlocBuilder(
-      BlocProvider.of<GetLocationCubit>(context),
-    );
-
-    if (locationState.location == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    return _NearbyIncidentsMapLoaded(location: locationState.location!);
-  }
-}
-
-class _NearbyIncidentsMapLoaded extends HookWidget {
-  const _NearbyIncidentsMapLoaded({required this.location});
-
-  final LatLng location;
 
   Future<void> _onMapCreated(
     MapboxMap controller,
@@ -147,33 +128,30 @@ class _NearbyIncidentsMapLoaded extends HookWidget {
   Widget build(BuildContext context) {
     final mapboxMapRef = useRef<MapboxMap?>(null);
     final annotaionManagerRef = useRef<PointAnnotationManager?>(null);
-    final locationMemoized = useMemoized(() => location, []);
+    final location = context.watch<CurrentLocation>();
 
     final selectedIncident = useState<Incident?>(null);
     final screenPosition = useState<Offset?>(null);
 
     final getNearbyIncidentsCubit = useBlocProvider(
-      () =>
-          sl<GetNearbyIncidentsCubit>()..loadNearbyIncidents(locationMemoized),
+      () => sl<GetNearbyIncidentsCubit>()..loadNearbyIncidents(location),
     );
     final nearbyIncidentsState = useBlocBuilder(getNearbyIncidentsCubit);
 
-    useBlocListener(
-      getNearbyIncidentsCubit,
-      (_, value, __) async {
-        if (mapboxMapRef.value == null || annotaionManagerRef.value == null) {
-          return;
-        }
+    useEffect(() {
+      if (mapboxMapRef.value == null || annotaionManagerRef.value == null) {
+        return null;
+      }
 
-        if (value is GetNearbyIncidentsLoadedState) {
-          await _onLoadNearbyIncidents(
-            annotaionManagerRef.value!,
-            value.incidents,
-          );
-        }
-      },
-      listenWhen: (state) => state is GetNearbyIncidentsLoadedState,
-    );
+      if (nearbyIncidentsState is GetNearbyIncidentsLoadedState) {
+        _onLoadNearbyIncidents(
+          annotaionManagerRef.value!,
+          nearbyIncidentsState.incidents,
+        );
+      }
+
+      return null;
+    }, [nearbyIncidentsState, mapboxMapRef.value, annotaionManagerRef.value]);
 
     useEffect(() {
       if (mapboxMapRef.value != null &&
@@ -209,17 +187,6 @@ class _NearbyIncidentsMapLoaded extends HookWidget {
       selectedIncident.value = null;
       screenPosition.value = null;
     }
-
-    // useEffect(() {
-    //   if (mapboxMapRef.value != null) {
-    //     mapboxMapRef.value!.addInteraction(
-    //       TapInteraction.onMap((actionContext) {
-    //         dismissTooltip();
-    //       }),
-    //     );
-    //   }
-    //   return null;
-    // }, [mapboxMapRef.value]);
 
     return Stack(
       children: [

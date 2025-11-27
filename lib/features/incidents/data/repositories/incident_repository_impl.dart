@@ -1,3 +1,4 @@
+import "package:ciudadano/features/geolocalization/data/sources/geolocalization_ws_source.dart";
 import "package:ciudadano/features/incidents/data/sources/incident_api_source.dart";
 import "package:ciudadano/features/incidents/data/sources/incident_in_memory_stream_source.dart";
 import "package:ciudadano/features/incidents/domain/entity/incident.dart";
@@ -9,8 +10,13 @@ import "package:latlong2/latlong.dart";
 class IncidentRepositoryImpl implements IncidentRepository {
   final IncidentApiSource _apiSource;
   final IncidentInMemoryStreamSource _inMemoryStreamSource;
+  final GeolocalizationWsSource _wsSource;
 
-  const IncidentRepositoryImpl(this._apiSource, this._inMemoryStreamSource);
+  const IncidentRepositoryImpl(
+    this._apiSource,
+    this._inMemoryStreamSource,
+    this._wsSource,
+  );
 
   @override
   Future<Either<String, List<Incident>>> getNearbyIncidents(
@@ -53,5 +59,13 @@ class IncidentRepositoryImpl implements IncidentRepository {
             return Right(incident);
           }),
         );
+  }
+
+  @override
+  Stream<Incident> watchIncidentReported() {
+    return _wsSource.watchIncidentsReported().map((incident) {
+      _inMemoryStreamSource.addNearbyIncident(incident);
+      return incident;
+    });
   }
 }

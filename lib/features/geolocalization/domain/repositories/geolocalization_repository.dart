@@ -5,4 +5,6 @@ abstract class GeolocalizationRepository {
   Future<LocationStatus> checkStatus();
   Future<LocationStatus> requestPermission();
   Stream<LatLng> watchCurrentLocation();
+  void connectGeolocalizationSocket(LatLng location);
+  void disconnectGeolocalizationSocket();
 }

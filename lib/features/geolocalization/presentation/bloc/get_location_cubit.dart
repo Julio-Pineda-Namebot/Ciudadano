@@ -22,9 +22,14 @@ class GetLocationCubit extends Cubit<GetLocationState> {
     : super(const GetLocationState());
 
   void listenLocation() {
-    _locationSubscription ??= _watchCurrentLocationUseCase().listen((location) {
-      emit(GetLocationState(location: location));
-    });
+    _locationSubscription ??= _watchCurrentLocationUseCase().listen(
+      (location) {
+        emit(GetLocationState(location: location));
+      },
+      onError: (_) {
+        emit(const GetLocationState(location: null));
+      },
+    );
   }
 
   void stopListening() {
