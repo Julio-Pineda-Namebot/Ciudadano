@@ -41,6 +41,10 @@ dependencies:
   image_picker: ^1.2.1
   socket_io_client: ^3.1.2
   animations: ^2.1.1
+  skeletonizer: ^2.1.1
+  flutter_contacts_service: ^0.0.3
+  flutter_chat_ui: ^2.9.1
+  flutter_chat_core: ^2.8.0
 
 dev_dependencies:
   flutter_test:

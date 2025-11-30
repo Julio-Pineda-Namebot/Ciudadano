@@ -1,3 +1,4 @@
+import "dart:convert";
 import "dart:typed_data";
 import "dart:ui";
 
@@ -8,7 +9,7 @@ import "package:ciudadano/features/incidents/domain/entity/incident.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/widgets/incident_marker_tooltip.dart";
 import "package:ciudadano/service_locator.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart" hide Visibility;
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
 import "package:hooked_bloc/hooked_bloc.dart";
@@ -17,24 +18,9 @@ import "package:mapbox_maps_flutter/mapbox_maps_flutter.dart";
 class NearbyIncidentsMap extends HookWidget {
   const NearbyIncidentsMap({super.key});
 
-  Future<void> _onMapCreated(
-    MapboxMap controller,
-    ObjectRef<MapboxMap?> mapboxMapRef,
-    ObjectRef<PointAnnotationManager?> annotaionManagerRef,
-  ) async {
-    mapboxMapRef.value = controller;
-
-    controller.logo.updateSettings(LogoSettings(enabled: false));
-    controller.attribution.updateSettings(AttributionSettings(enabled: false));
-    controller.location.updateSettings(
-      LocationComponentSettings(enabled: true, pulsingEnabled: true),
-    );
-    controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-    controller.setBounds(CameraBoundsOptions(minZoom: 12.0, maxZoom: 19.0));
-
-    annotaionManagerRef.value =
-        await controller.annotations.createPointAnnotationManager();
-  }
+  static const String _sourceId = "incidents-source";
+  static const String _layerId = "incidents-layer";
+  static const String _imageIdPrefix = "incident-";
 
   IconData getIncidentIcon(IncidentType type) {
     switch (type) {
@@ -99,26 +85,90 @@ class NearbyIncidentsMap extends HookWidget {
     return bytes!.buffer.asUint8List();
   }
 
+  Future<void> _addIncidentImageToStyle(
+    MapboxMap mapboxMap,
+    IncidentType type,
+  ) async {
+    final imageId = "$_imageIdPrefix${type.name}";
+    const iconSize = 20.0;
+    final canvasSize = (iconSize * 1.6).toInt();
+
+    final imageBytes = await _iconToBytes(
+      getIncidentIcon(type),
+      getIncidentColor(type),
+      size: iconSize,
+    );
+
+    try {
+      await mapboxMap.style.addStyleImage(
+        imageId,
+        1.0,
+        MbxImage(width: canvasSize, height: canvasSize, data: imageBytes),
+        false,
+        [],
+        [],
+        null,
+      );
+    } catch (e) {
+      pr("Error adding image to style: $e");
+    }
+  }
+
+  Feature _createIncidentFeature(Incident incident) {
+    return Feature(
+      id: incident.id,
+      geometry: Point(
+        coordinates: Position(
+          incident.location.longitude,
+          incident.location.latitude,
+        ),
+      ),
+      properties: {
+        "id": incident.id,
+        "type": incident.type.name,
+        "icon": "$_imageIdPrefix${incident.type.name}",
+      },
+    );
+  }
+
   Future<void> _onLoadNearbyIncidents(
-    PointAnnotationManager annotaionManager,
+    MapboxMap mapboxMap,
     List<Incident> incidents,
   ) async {
-    await annotaionManager.deleteAll();
+    final uniqueTypes = incidents.map((i) => i.type).toSet();
+    await Future.wait(
+      uniqueTypes.map((type) => _addIncidentImageToStyle(mapboxMap, type)),
+    );
 
-    for (final incident in incidents) {
-      annotaionManager.create(
-        PointAnnotationOptions(
-          geometry: Point(
-            coordinates: Position(
-              incident.location.longitude,
-              incident.location.latitude,
-            ),
-          ),
-          image: await _iconToBytes(
-            getIncidentIcon(incident.type),
-            getIncidentColor(incident.type),
-            size: 80,
-          ),
+    final featureCollection = FeatureCollection(
+      features: incidents.map(_createIncidentFeature).toList(),
+    );
+    final geojsonData = json.encode(featureCollection);
+
+    final sourceExists = await mapboxMap.style.styleSourceExists(_sourceId);
+
+    if (sourceExists) {
+      await mapboxMap.style.setStyleSourceProperty(
+        _sourceId,
+        "data",
+        geojsonData,
+      );
+    } else {
+      await mapboxMap.style.addSource(
+        GeoJsonSource(id: _sourceId, data: geojsonData),
+      );
+
+      await mapboxMap.style.addLayer(
+        SymbolLayer(
+          id: _layerId,
+          sourceId: _sourceId,
+          visibility: Visibility.VISIBLE,
+          iconImage: "${_imageIdPrefix}steal",
+          iconImageExpression: ["get", "icon"],
+          iconSize: 1.5,
+          iconAllowOverlap: true,
+          iconIgnorePlacement: true,
+          slot: LayerSlot.TOP,
         ),
       );
     }
@@ -126,8 +176,7 @@ class NearbyIncidentsMap extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mapboxMapRef = useRef<MapboxMap?>(null);
-    final annotaionManagerRef = useRef<PointAnnotationManager?>(null);
+    final mapboxMapRef = useState<MapboxMap?>(null);
     final location = context.watch<CurrentLocation>();
 
     final selectedIncident = useState<Incident?>(null);
@@ -139,49 +188,58 @@ class NearbyIncidentsMap extends HookWidget {
     final nearbyIncidentsState = useBlocBuilder(getNearbyIncidentsCubit);
 
     useEffect(() {
-      if (mapboxMapRef.value == null || annotaionManagerRef.value == null) {
-        return null;
-      }
-
-      if (nearbyIncidentsState is GetNearbyIncidentsLoadedState) {
+      if (mapboxMapRef.value != null &&
+          nearbyIncidentsState is GetNearbyIncidentsLoadedState) {
         _onLoadNearbyIncidents(
-          annotaionManagerRef.value!,
+          mapboxMapRef.value!,
           nearbyIncidentsState.incidents,
         );
       }
-
       return null;
-    }, [nearbyIncidentsState, mapboxMapRef.value, annotaionManagerRef.value]);
+    }, [nearbyIncidentsState, mapboxMapRef.value]);
 
-    useEffect(() {
-      if (mapboxMapRef.value != null &&
-          annotaionManagerRef.value != null &&
-          nearbyIncidentsState is GetNearbyIncidentsLoadedState) {
-        final tapEvent = annotaionManagerRef.value!.tapEvents(
-          onTap: (annotation) async {
-            final point = annotation.geometry;
-            final screenPos = await mapboxMapRef.value!.pixelForCoordinate(
-              point,
-            );
-            selectedIncident.value = nearbyIncidentsState.incidents.firstWhere(
-              (incident) =>
-                  incident.location.latitude == point.coordinates.lat &&
-                  incident.location.longitude == point.coordinates.lng,
-            );
-
-            screenPosition.value = Offset(
-              screenPos.x.toDouble(),
-              screenPos.y.toDouble(),
-            );
-          },
-        );
-
-        return () {
-          tapEvent.cancel();
-        };
+    void handleMapTap(MapContentGestureContext mapContext) async {
+      final nearbyIncidentsState = getNearbyIncidentsCubit.state;
+      if (nearbyIncidentsState is! GetNearbyIncidentsLoadedState) {
+        return;
       }
-      return null;
-    }, [mapboxMapRef.value, annotaionManagerRef.value, nearbyIncidentsState]);
+
+      final tapPoint = mapContext.touchPosition;
+      const radius = 10.0;
+
+      final queryGeometry = RenderedQueryGeometry.fromScreenBox(
+        ScreenBox(
+          min: ScreenCoordinate(x: tapPoint.x - radius, y: tapPoint.y - radius),
+          max: ScreenCoordinate(x: tapPoint.x + radius, y: tapPoint.y + radius),
+        ),
+      );
+
+      final features = await mapboxMapRef.value!.queryRenderedFeatures(
+        queryGeometry,
+        RenderedQueryOptions(layerIds: [_layerId]),
+      );
+      if (features.isEmpty) {
+        selectedIncident.value = null;
+        screenPosition.value = null;
+        return;
+      }
+
+      final firstFeature = features.first;
+      if (firstFeature == null) {
+        return;
+      }
+
+      final feature = firstFeature.queriedFeature.feature;
+      final properties = feature["properties"] as Map?;
+      if (properties == null) {
+        return;
+      }
+
+      selectedIncident.value = nearbyIncidentsState.incidents.firstWhere(
+        (incident) => incident.id == properties["id"],
+      );
+      screenPosition.value = Offset(tapPoint.x, tapPoint.y);
+    }
 
     void dismissTooltip() {
       selectedIncident.value = null;
@@ -198,8 +256,18 @@ class NearbyIncidentsMap extends HookWidget {
             ),
           ),
           onMapCreated: (controller) {
-            _onMapCreated(controller, mapboxMapRef, annotaionManagerRef);
+            mapboxMapRef.value = controller;
+            mapboxMapRef.value!.location.updateSettings(
+              LocationComponentSettings(enabled: true, pulsingEnabled: true),
+            );
+            mapboxMapRef.value!.logo.updateSettings(
+              LogoSettings(enabled: false),
+            );
+            mapboxMapRef.value!.attribution.updateSettings(
+              AttributionSettings(enabled: false),
+            );
           },
+          onTapListener: handleMapTap,
         ),
         Positioned(
           bottom: 24,

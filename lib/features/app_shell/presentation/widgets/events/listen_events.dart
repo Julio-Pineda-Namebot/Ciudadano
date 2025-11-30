@@ -1,5 +1,7 @@
 import "dart:async";
 
+import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
+import "package:ciudadano/features/chats/domain/repositories/chat_repository.dart";
 import "package:ciudadano/features/geolocalization/domain/usecases/connect_geolocalization_socket_use_case.dart";
 import "package:ciudadano/features/geolocalization/domain/usecases/disconnect_geolocalization_socket_use_case.dart";
 import "package:ciudadano/features/geolocalization/presentation/widgets/geolocalization_provider.dart";
@@ -31,6 +33,14 @@ class _ListenEventsState extends State<ListenEvents> {
       sl<WatchIncidentReportedUseCase>();
   late StreamSubscription<Incident> _incidentReportedSubscription;
 
+  // Chats
+  final ChatRepository _chatRepository = sl<ChatRepository>();
+  final ChatWsSource _chatWsSource = sl<ChatWsSource>();
+  late StreamSubscription _externalChatContactCreatedSubscription;
+  late StreamSubscription _externalChatContactMessageReceivedSubscription;
+  late StreamSubscription _externalChatGroupCreatedSubscription;
+  late StreamSubscription _externalChatGroupMessageReceivedSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +48,19 @@ class _ListenEventsState extends State<ListenEvents> {
     _incidentReportedSubscription = _watchIncidentReportedUseCase().listen(
       (incident) {},
     );
+    _chatWsSource.connect();
+    _externalChatContactCreatedSubscription = _chatRepository
+        .observeExternalChatContactCreated()
+        .listen((event) {});
+    _externalChatContactMessageReceivedSubscription = _chatRepository
+        .observeExternalChatContactMessageReceived()
+        .listen((event) {});
+    _externalChatGroupCreatedSubscription = _chatRepository
+        .observeExternalChatGroupCreated()
+        .listen((event) {});
+    _externalChatGroupMessageReceivedSubscription = _chatRepository
+        .observeExternalChatGroupMessageReceived()
+        .listen((event) {});
   }
 
   @override
@@ -49,6 +72,11 @@ class _ListenEventsState extends State<ListenEvents> {
   void dispose() {
     _disconnectGeolocalizationSocketUseCase();
     _incidentReportedSubscription.cancel();
+    _chatWsSource.disconnect();
+    _externalChatContactCreatedSubscription.cancel();
+    _externalChatContactMessageReceivedSubscription.cancel();
+    _externalChatGroupCreatedSubscription.cancel();
+    _externalChatGroupMessageReceivedSubscription.cancel();
     super.dispose();
   }
 }

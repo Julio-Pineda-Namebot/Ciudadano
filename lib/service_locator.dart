@@ -16,6 +16,20 @@ import "package:ciudadano/features/auth/domain/usecases/auth_reset_password_use_
 import "package:ciudadano/features/auth/domain/usecases/auth_send_reset_password_email_use_case.dart";
 import "package:ciudadano/features/auth/domain/usecases/auth_verify_email_use_case.dart";
 import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
+import "package:ciudadano/features/chats/data/repositories/chat_repository_impl.dart";
+import "package:ciudadano/features/chats/data/source/chat_api_source.dart";
+import "package:ciudadano/features/chats/data/source/chat_in_memory_stream_source.dart";
+import "package:ciudadano/features/chats/data/source/chat_local_permission_source.dart";
+import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
+import "package:ciudadano/features/chats/domain/repositories/chat_repository.dart";
+import "package:ciudadano/features/chats/presentation/bloc/add_chat_contact_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/check_contacts_permission_status_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/create_chat_group_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/get_chat_contact_messages_cursor_paginated_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/get_chat_contacts_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/get_chat_group_messages_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/get_chat_groups_cubit.dart";
+import "package:ciudadano/features/chats/presentation/bloc/get_possible_contacts_by_phone_cubit.dart";
 import "package:ciudadano/features/geolocalization/data/repositories/geolocalization_repository_impl.dart";
 import "package:ciudadano/features/geolocalization/data/sources/geolocalization_ws_source.dart";
 import "package:ciudadano/features/geolocalization/data/sources/geolocator_source.dart";
@@ -75,6 +89,14 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton<IncidentRepository>(
     IncidentRepositoryImpl(sl(), sl(), sl()),
   );
+  //// Chats
+  sl.registerSingleton(ChatApiSource(sl()));
+  sl.registerSingleton(ChatInMemoryStreamSource());
+  sl.registerSingleton(ChatWsSource(sl()));
+  sl.registerSingleton(ChatLocalPermissionSource());
+  sl.registerSingleton<ChatRepository>(
+    ChatRepositoryImpl(sl(), sl(), sl(), sl()),
+  );
 
   // Use Cases
   //// Auth
@@ -108,4 +130,13 @@ Future<void> setUpServiceLocator() async {
   //// Incidents
   sl.registerFactory(() => GetNearbyIncidentsCubit(sl(), sl()));
   sl.registerFactory(() => ReportIncidentCubit(sl()));
+  //// Chats
+  sl.registerFactory(() => GetChatContactsCubit(sl()));
+  sl.registerFactory(() => GetPossibleContactsByPhoneCubit(sl()));
+  sl.registerFactory(() => CheckContactsPermissionStatusCubit(sl()));
+  sl.registerFactory(() => AddChatContactCubit(sl()));
+  sl.registerFactory(() => GetChatContactMessagesCursorPaginatedCubit(sl()));
+  sl.registerFactory(() => GetChatGroupMessagesCubit(sl()));
+  sl.registerFactory(() => GetChatGroupsCubit(sl()));
+  sl.registerFactory(() => CreateChatGroupCubit(sl()));
 }
