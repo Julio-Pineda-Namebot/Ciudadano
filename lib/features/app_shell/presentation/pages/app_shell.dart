@@ -44,14 +44,18 @@ class AppShell extends StatelessWidget {
             },
             child: BlocListener<NotificationBloc, NotificationState>(
               listener: (context, state) {
-                context.read<NotificationBloc>().add(
-                  RequestNotificationPermissions(),
-                );
+                if (state is NotificationInitialized &&
+                    !state.permissionsGranted) {
+                  context.read<NotificationBloc>().add(
+                    RequestNotificationPermissions(),
+                  );
+                }
+
+                if (state is NotificationInitialized &&
+                    state.permissionsGranted) {
+                  context.read<NotificationBloc>().autoRegisterToken();
+                }
               },
-              listenWhen:
-                  (previous, current) =>
-                      current is NotificationInitialized &&
-                      !current.permissionsGranted,
               child: const MainNavigation(),
             ),
           ),

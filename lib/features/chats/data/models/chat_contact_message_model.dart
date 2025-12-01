@@ -14,7 +14,7 @@ class ChatContactMessageModel extends ChatContactMessage {
       id: json["id"],
       content: json["content"],
       sender: ChatContactModel(
-        id: json["sender"]["id"],
+        id: json["contact_id"],
         userId: json["sender"]["id"],
         firstName: json["sender"]["firstName"],
         lastName: json["sender"]["lastName"],

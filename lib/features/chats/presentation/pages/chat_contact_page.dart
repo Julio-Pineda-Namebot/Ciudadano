@@ -68,7 +68,7 @@ class _ChatContactPageBody extends HookWidget {
               text: message.content,
               createdAt: message.createdAt,
               deliveredAt: message.createdAt,
-              authorId: message.sender.id,
+              authorId: message.sender.userId,
             );
           }).toList(),
         );
@@ -88,8 +88,8 @@ class _ChatContactPageBody extends HookWidget {
         id: currentUser.id,
         name: "${currentUser.firstName} ${currentUser.lastName}",
       ),
-      chatContact.id: User(
-        id: chatContact.id,
+      chatContact.userId: User(
+        id: chatContact.userId,
         name: "${chatContact.firstName} ${chatContact.lastName}",
       ),
     };
