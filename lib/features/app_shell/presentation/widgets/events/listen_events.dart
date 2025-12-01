@@ -1,10 +1,12 @@
 import "dart:async";
 
+import "package:ciudadano/features/chats/data/source/chat_in_memory_stream_source.dart";
 import "package:ciudadano/features/chats/data/source/chat_ws_source.dart";
 import "package:ciudadano/features/chats/domain/repositories/chat_repository.dart";
 import "package:ciudadano/features/geolocalization/domain/usecases/connect_geolocalization_socket_use_case.dart";
 import "package:ciudadano/features/geolocalization/domain/usecases/disconnect_geolocalization_socket_use_case.dart";
 import "package:ciudadano/features/geolocalization/presentation/widgets/geolocalization_provider.dart";
+import "package:ciudadano/features/incidents/data/sources/incident_in_memory_stream_source.dart";
 import "package:ciudadano/features/incidents/domain/entity/incident.dart";
 import "package:ciudadano/features/incidents/domain/usecases/watch_incident_reported_use_case.dart";
 import "package:ciudadano/service_locator.dart";
@@ -77,6 +79,12 @@ class _ListenEventsState extends State<ListenEvents> {
     _externalChatContactMessageReceivedSubscription.cancel();
     _externalChatGroupCreatedSubscription.cancel();
     _externalChatGroupMessageReceivedSubscription.cancel();
+
+    sl<IncidentInMemoryStreamSource>().clearNearbyIncidents();
+    sl<ChatInMemoryStreamSource>().clearChatContactMessages(null);
+    sl<ChatInMemoryStreamSource>().clearChatGroupMessages(null);
+    sl<ChatInMemoryStreamSource>().clearChatContacts();
+    sl<ChatInMemoryStreamSource>().clearChatGroups();
     super.dispose();
   }
 }

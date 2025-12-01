@@ -45,6 +45,12 @@ dependencies:
   flutter_contacts_service: ^0.0.3
   flutter_chat_ui: ^2.9.1
   flutter_chat_core: ^2.8.0
+  intl: ^0.20.2
+  syncfusion_flutter_datepicker: ^31.2.15
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^19.5.0
+  connectivity_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:

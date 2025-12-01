@@ -1,6 +1,11 @@
 import "package:ciudadano/core/api/dio_client.dart";
 import "package:ciudadano/core/api/logger_interceptor.dart";
 import "package:ciudadano/core/ws/socket_io_client.dart";
+import "package:ciudadano/features/alerts/data/repository/alert_repository_impl.dart";
+import "package:ciudadano/features/alerts/data/source/alert_remote_data_source.dart";
+import "package:ciudadano/features/alerts/domain/repository/alert_repository.dart";
+import "package:ciudadano/features/alerts/domain/usecases/create_alert_use_case.dart";
+import "package:ciudadano/features/alerts/presentation/bloc/alert_bloc.dart";
 import "package:ciudadano/features/app_shell/presentation/bloc/presentation_cubit.dart";
 import "package:ciudadano/features/auth/data/interceptors/auth_interceptor.dart";
 import "package:ciudadano/features/auth/data/repositories/auth_repository_impl.dart";
@@ -30,6 +35,24 @@ import "package:ciudadano/features/chats/presentation/bloc/get_chat_contacts_cub
 import "package:ciudadano/features/chats/presentation/bloc/get_chat_group_messages_cubit.dart";
 import "package:ciudadano/features/chats/presentation/bloc/get_chat_groups_cubit.dart";
 import "package:ciudadano/features/chats/presentation/bloc/get_possible_contacts_by_phone_cubit.dart";
+import "package:ciudadano/features/comunity/data/datasource/activity_local_datasource.dart";
+import "package:ciudadano/features/comunity/data/datasource/cam_feed_local_datasource.dart";
+import "package:ciudadano/features/comunity/data/datasource/event_local_datasource.dart";
+import "package:ciudadano/features/comunity/data/repository/activity_repository_impl.dart";
+import "package:ciudadano/features/comunity/data/repository/cam_feed_repository_impl.dart";
+import "package:ciudadano/features/comunity/data/repository/event_repository_impl.dart";
+import "package:ciudadano/features/comunity/domain/repository/activity_repository.dart";
+import "package:ciudadano/features/comunity/domain/repository/cam_feed_repository.dart";
+import "package:ciudadano/features/comunity/domain/repository/event_repository.dart";
+import "package:ciudadano/features/comunity/domain/usecases/activity/add_activity.dart";
+import "package:ciudadano/features/comunity/domain/usecases/activity/get_activity.dart";
+import "package:ciudadano/features/comunity/domain/usecases/event/add_event.dart";
+import "package:ciudadano/features/comunity/domain/usecases/event/get_event.dart";
+import "package:ciudadano/features/comunity/domain/usecases/event/toggle_join_event.dart";
+import "package:ciudadano/features/comunity/domain/usecases/surveillance/get_cam_feeds.dart";
+import "package:ciudadano/features/comunity/presentation/bloc/activity/activity_bloc.dart";
+import "package:ciudadano/features/comunity/presentation/bloc/event/event_bloc.dart";
+import "package:ciudadano/features/comunity/presentation/bloc/surveillance/cam_bloc.dart";
 import "package:ciudadano/features/geolocalization/data/repositories/geolocalization_repository_impl.dart";
 import "package:ciudadano/features/geolocalization/data/sources/geolocalization_ws_source.dart";
 import "package:ciudadano/features/geolocalization/data/sources/geolocator_source.dart";
@@ -51,6 +74,15 @@ import "package:ciudadano/features/incidents/domain/usecases/watch_incident_repo
 import "package:ciudadano/features/incidents/domain/usecases/watch_nearby_incidents_use_case.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/get_nearby_incidents_cubit.dart";
 import "package:ciudadano/features/incidents/presentation/bloc/report_incident_cubit.dart";
+import "package:ciudadano/features/notifications/data/repository/notification_repository_impl.dart";
+import "package:ciudadano/features/notifications/data/source/notification_api_source.dart";
+import "package:ciudadano/features/notifications/data/source/notification_local_source.dart";
+import "package:ciudadano/features/notifications/domain/repository/notification_repository.dart";
+import "package:ciudadano/features/notifications/domain/usecases/initialize_notifications_use_case.dart";
+import "package:ciudadano/features/notifications/domain/usecases/listen_to_notifications_use_case.dart";
+import "package:ciudadano/features/notifications/domain/usecases/register_push_token_use_case.dart";
+import "package:ciudadano/features/notifications/domain/usecases/request_notification_permissions_use_case.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
 import "package:get_it/get_it.dart";
 import "package:logger/logger.dart";
 import "package:shared_preferences/shared_preferences.dart";
@@ -97,6 +129,21 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton<ChatRepository>(
     ChatRepositoryImpl(sl(), sl(), sl(), sl()),
   );
+  //// Alerts
+  sl.registerSingleton<AlertRemoteDataSource>(AlertRemoteDataSourceImpl());
+  sl.registerSingleton<AlertRepository>(
+    AlertRepositoryImpl(remoteDataSource: sl()),
+  );
+  sl.registerSingleton(CreateAlertUseCase(sl<AlertRepository>()));
+  //// Notifications
+  sl.registerSingleton<NotificationLocalSource>(NotificationLocalSourceImpl());
+  sl.registerSingleton<NotificationApiSource>(NotificationApiSourceImpl());
+  sl.registerSingleton<NotificationRepository>(
+    NotificationRepositoryImpl(
+      localSource: sl<NotificationLocalSource>(),
+      apiSource: sl<NotificationApiSource>(),
+    ),
+  );
 
   // Use Cases
   //// Auth
@@ -119,6 +166,17 @@ Future<void> setUpServiceLocator() async {
   sl.registerSingleton(WatchNearbyIncidentsUseCase(sl()));
   sl.registerSingleton(WatchIncidentReportedUseCase(sl()));
   sl.registerSingleton(ReportIncidentUseCase(sl()));
+  //// Notifications
+  sl.registerSingleton(
+    InitializeNotificationsUseCase(sl<NotificationRepository>()),
+  );
+  sl.registerSingleton(RegisterPushTokenUseCase(sl<NotificationRepository>()));
+  sl.registerSingleton(
+    RequestNotificationPermissionsUseCase(sl<NotificationRepository>()),
+  );
+  sl.registerSingleton(
+    ListenToNotificationsUseCase(sl<NotificationRepository>()),
+  );
 
   // Blocs / Cubits
   sl.registerFactory(() => PresentationCubit());
@@ -139,4 +197,64 @@ Future<void> setUpServiceLocator() async {
   sl.registerFactory(() => GetChatGroupMessagesCubit(sl()));
   sl.registerFactory(() => GetChatGroupsCubit(sl()));
   sl.registerFactory(() => CreateChatGroupCubit(sl()));
+  //// Alerts
+  sl.registerFactory(() => AlertBloc(createAlertUseCase: sl()));
+  //// Notifications
+
+  sl.registerLazySingleton(
+    () => NotificationBloc(
+      initializeNotificationsUseCase: sl<InitializeNotificationsUseCase>(),
+      registerPushTokenUseCase: sl<RegisterPushTokenUseCase>(),
+      requestNotificationPermissionsUseCase:
+          sl<RequestNotificationPermissionsUseCase>(),
+      listenToNotificationsUseCase: sl<ListenToNotificationsUseCase>(),
+      notificationRepository: sl<NotificationRepository>(),
+    ),
+  );
+
+  // Activity - Comunity
+  sl.registerLazySingleton<ActividadLocalDatasource>(
+    () => ActividadLocalDatasourceImpl(),
+  );
+
+  sl.registerLazySingleton<ActividadRepository>(
+    () => ActividadRepositoryImpl(datasource: sl()),
+  );
+
+  sl.registerLazySingleton<GetActividades>(() => GetActividades(sl()));
+  sl.registerLazySingleton<AddActividad>(() => AddActividad(sl()));
+
+  sl.registerFactory<ActividadBloc>(
+    () => ActividadBloc(getActividades: sl(), addActividad: sl()),
+  );
+
+  // Event - Comunity
+  sl.registerLazySingleton<EventoLocalDatasource>(
+    () => EventoLocalDatasourceImpl(),
+  );
+  sl.registerLazySingleton<EventoRepository>(
+    () => EventoRepositoryImpl(datasource: sl()),
+  );
+  sl.registerLazySingleton<GetEventos>(() => GetEventos(sl()));
+  sl.registerLazySingleton<AddEvento>(() => AddEvento(sl()));
+  sl.registerLazySingleton<ToggleJoinEvento>(() => ToggleJoinEvento(sl()));
+  sl.registerFactory<EventoBloc>(
+    () => EventoBloc(getEventos: sl(), addEvento: sl(), toggleJoin: sl()),
+  );
+
+  // surveillance - Comunity
+  sl.registerLazySingleton<CamFeedLocalDatasource>(
+    () => CamFeedLocalDatasourceImpl(),
+  );
+  sl.registerLazySingleton<CamFeedRepository>(
+    () => CamFeedRepositoryImpl(datasource: sl()),
+  );
+  sl.registerLazySingleton<GetCamFeeds>(() => GetCamFeeds(sl()));
+  sl.registerFactory<CamBloc>(() => CamBloc(getFeeds: sl()));
+
+  // // safe-route - Sidebar
+  // sl.registerFactory(() => RouteBloc(GetRouteUseCase(sl())));
+  // sl.registerLazySingleton(() => GetRouteUseCase(sl()));
+  // sl.registerLazySingleton<RouteRepository>(() => RouteRepositoryImpl(sl()));
+  // sl.registerLazySingleton(() => RouteRemoteDatasource());
 }

@@ -1,3 +1,5 @@
+import "package:animations/animations.dart";
+import "package:ciudadano/features/app_shell/presentation/pages/present/redirect_presentation_screen_page.dart";
 import "package:ciudadano/features/auth/domain/params/auth_login_params.dart";
 import "package:ciudadano/features/auth/domain/params/auth_register_params.dart";
 import "package:ciudadano/features/auth/domain/params/auth_reset_password_params.dart";
@@ -256,8 +258,18 @@ class LoginPage extends StatelessWidget {
           },
         ),
       ],
-      onSubmitAnimationCompleted:
-          () => BlocProvider.of<AuthCubit>(context).checkAuthentication(),
+      onSubmitAnimationCompleted: () {
+        BlocProvider.of<AuthCubit>(context).checkAuthentication();
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            transitionDuration: const Duration(milliseconds: 300),
+            pageBuilder: (_, __, ___) => const RedirectPresentationScreenPage(),
+            transitionsBuilder: (_, animation, __, child) {
+              return FadeScaleTransition(animation: animation, child: child);
+            },
+          ),
+        );
+      },
     );
   }
 }

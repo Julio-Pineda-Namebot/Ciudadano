@@ -128,14 +128,21 @@ mixin _ChatContactMessagesInMemoryStreamSourceMixin {
     _chatContactMessagesSubjectsMapped[contactId]!.addError(error);
   }
 
-  void clearChatContactMessages(String contactId) {
-    if (!_chatContactMessagesSubjectsMapped.containsKey(contactId)) {
-      _chatContactMessagesSubjectsMapped[contactId] = BehaviorSubject.seeded(
-        null,
-      );
-    }
+  void clearChatContactMessages(String? contactId) {
+    if (contactId != null) {
+      if (!_chatContactMessagesSubjectsMapped.containsKey(contactId)) {
+        _chatContactMessagesSubjectsMapped[contactId] = BehaviorSubject.seeded(
+          null,
+        );
+      }
 
-    _chatContactMessagesSubjectsMapped[contactId]!.add(null);
+      _chatContactMessagesSubjectsMapped[contactId]!.add(null);
+    } else {
+      for (final subject in _chatContactMessagesSubjectsMapped.values) {
+        subject.close();
+      }
+      _chatContactMessagesSubjectsMapped.clear();
+    }
   }
 
   void addChatContactMessage(String contactId, ChatContactMessage message) {
@@ -199,12 +206,21 @@ mixin _ChatGroupMessagesInMemoryStreamSourceMixin {
     _chatGroupMessagesSubjectsMapped[groupId]!.addError(error);
   }
 
-  void clearChatGroupMessages(String groupId) {
-    if (!_chatGroupMessagesSubjectsMapped.containsKey(groupId)) {
-      _chatGroupMessagesSubjectsMapped[groupId] = BehaviorSubject.seeded(null);
-    }
+  void clearChatGroupMessages(String? groupId) {
+    if (groupId != null) {
+      if (!_chatGroupMessagesSubjectsMapped.containsKey(groupId)) {
+        _chatGroupMessagesSubjectsMapped[groupId] = BehaviorSubject.seeded(
+          null,
+        );
+      }
 
-    _chatGroupMessagesSubjectsMapped[groupId]!.add(null);
+      _chatGroupMessagesSubjectsMapped[groupId]!.add(null);
+    } else {
+      for (final subject in _chatGroupMessagesSubjectsMapped.values) {
+        subject.close();
+      }
+      _chatGroupMessagesSubjectsMapped.clear();
+    }
   }
 
   void addChatGroupMessage(String groupId, ChatGroupMessage message) {

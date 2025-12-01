@@ -4,6 +4,9 @@ import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
 import "package:ciudadano/features/auth/presentation/pages/login_page.dart";
 import "package:ciudadano/features/geolocalization/presentation/bloc/geolocalization_permission_cubit.dart";
 import "package:ciudadano/features/geolocalization/presentation/widgets/geolocalization_provider.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_bloc.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_event.dart";
+import "package:ciudadano/features/notifications/presentation/bloc/notification_state.dart";
 import "package:ciudadano/service_locator.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
@@ -28,7 +31,31 @@ class AppShell extends StatelessWidget {
       listenWhen: (previous, current) => current is UnauthenticatedState,
       child: BlocProvider(
         create: (_) => sl<GeolocalizationPermissionCubit>()..askPermission(),
-        child: const GeolocalizationProvider(child: MainNavigation()),
+        child: GeolocalizationProvider(
+          child: BlocProvider(
+            create: (context) {
+              final bloc = sl<NotificationBloc>();
+
+              Future.delayed(const Duration(milliseconds: 500), () {
+                print("Disparando InitializeNotifications event");
+                bloc.add(InitializeNotifications());
+              });
+              return bloc;
+            },
+            child: BlocListener<NotificationBloc, NotificationState>(
+              listener: (context, state) {
+                context.read<NotificationBloc>().add(
+                  RequestNotificationPermissions(),
+                );
+              },
+              listenWhen:
+                  (previous, current) =>
+                      current is NotificationInitialized &&
+                      !current.permissionsGranted,
+              child: const MainNavigation(),
+            ),
+          ),
+        ),
       ),
     );
   }

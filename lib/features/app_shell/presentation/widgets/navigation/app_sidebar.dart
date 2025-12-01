@@ -1,9 +1,16 @@
 import "package:ciudadano/features/app_shell/presentation/hooks/use_sidebar_controller.dart";
+import "package:ciudadano/features/auth/domain/entities/auth_profile.dart";
 import "package:ciudadano/features/auth/presentation/bloc/auth_cubit.dart";
+import "package:ciudadano/features/auth/presentation/pages/user_profile_page.dart";
+import "package:ciudadano/features/geolocalization/presentation/widgets/geolocalization_provider.dart";
+import "package:ciudadano/features/news/presentation/page/news_page.dart";
+import "package:ciudadano/features/safe_route/presentation/pages/safe_route_page.dart";
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_hooks/flutter_hooks.dart";
+import "package:provider/provider.dart";
 import "package:sidebarx/sidebarx.dart";
+import "package:ciudadano/features/app_shell/presentation/pages/about/about_page.dart";
 
 class AppSidebar extends HookWidget {
   const AppSidebar({super.key});
@@ -70,46 +77,52 @@ class AppSidebar extends HookWidget {
           icon: Icons.person,
           label: "Perfil",
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const UserProfilePage()),
-            // ).then((_) => sidebarController.selectIndex(-1));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => Provider.value(
+                      value: context.read<AuthProfile>(),
+                      child: const UserProfilePage(),
+                    ),
+              ),
+            ).then((_) => sidebarController.selectIndex(-1));
           },
         ),
         SidebarXItem(
           icon: Icons.newspaper,
           label: "Noticias",
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const NewsPage()),
-            // ).then((_) => sidebarController.selectIndex(-1));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const NewsPage()),
+            ).then((_) => sidebarController.selectIndex(-1));
           },
         ),
         SidebarXItem(
           icon: Icons.alt_route,
           label: "Recorrido Seguro",
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder:
-            //         (context) => BlocProvider(
-            //           create: (context) => sl<NearbyIncidentsBloc>(),
-            //           child: const SafeRoutePage(),
-            //         ),
-            //   ),
-            // ).then((_) => sidebarController.selectIndex(-1));
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (_) => Provider.value(
+                      value: context.read<CurrentLocation>(),
+                      child: const SafeRoutePage(),
+                    ),
+              ),
+            ).then((_) => sidebarController.selectIndex(-1));
           },
         ),
         SidebarXItem(
           icon: Icons.info,
           label: "Acerca de Ciudadano",
           onTap: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const AboutPage()),
-            // ).then((_) => sidebarController.selectIndex(-1));
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AboutPage()),
+            ).then((_) => sidebarController.selectIndex(-1));
           },
         ),
       ],

@@ -1,8 +1,8 @@
 mixin ApiConfig {
   static const String productionUrl = "https://ciudadano-api-rest.onrender.com";
-  static const String developmentUrl = "http://192.168.0.2:3000";
+  static const String developmentUrl = "http://192.168.0.3:3000";
 
   static String get baseUrl {
-    return developmentUrl;
+    return productionUrl;
   }
 }
